@@ -115,7 +115,7 @@ def traffic_LTR(cars) :
         car_x = car[0]
         car_y = car[1]
         speed_car = car[2]
-        draw_circle(car_x, car_y+15, 15)
+        draw_rect(car_x, car_y, 40, 20, COLOR_RED)
         cars[i][0] += speed_car      # CHANGE SPEED OF cars[i]
         if car_x >= WIDTH :
             remove_car.add(i)
@@ -136,7 +136,7 @@ def traffic_RTL(cars) :
         car_x = car[0]
         car_y = car[1]
         speed_car = car[2]
-        draw_circle(car_x, car_y+15, 15, COLOR_RED)
+        draw_rect(car_x, car_y, 40, 20, COLOR_RED)
         cars[i][0] += speed_car      # CHANGE SPEED OF cars[i]
         if car_x < 0 :
             remove_car.add(i)
@@ -207,8 +207,7 @@ def game_loop():
     global GAME_OVER
     global OPEN_RUNWAY1
 
-    ply_x = 0
-    ply_y = 0
+    BAND_KEYBOUND = False 
 
     LEFT_BOUND = 30
     N_STEP_X = 15
@@ -227,9 +226,12 @@ def game_loop():
     GROUND_HIEGHT = 270
     GROUND = (GROUND_X, GROUND_Y, GROUND_WIDTH, GROUND_HIEGHT)
 
+    ply_x = cur_x
+    ply_y = POS_Y[0]
+
     #SET CAR INFO
-    car_runway_LTR = create_runway(POS_Y[1], 'left_to_rigth') #+ create_runway(POS_Y[3], 'left_to_rigth')
-    # car_runway_RTL = create_runway(POS_Y[2], 'right_to_left') + create_runway(POS_Y[4], 'right_to_left')
+    car_runway_LTR = create_runway(POS_Y[1], 'left_to_rigth') + create_runway(POS_Y[3], 'left_to_rigth')
+    car_runway_RTL = create_runway(POS_Y[2], 'right_to_left') + create_runway(POS_Y[4], 'right_to_left')
 
     while not GAME_OVER:
         # =============== EVENT PROCESSING ===================== #
@@ -237,7 +239,7 @@ def game_loop():
         for ent in events:
             game_exit(ent)
 
-            if ent.type == pygame.KEYDOWN:
+            if ent.type == pygame.KEYDOWN and not BAND_KEYBOUND:
                 key = ent.key
                 if key == pygame.K_LEFT or key == pygame.K_a:
                     # x_id -= 1
@@ -257,33 +259,36 @@ def game_loop():
                     pass
 
         # ===================== LOGIC GAME ======================= #
-        # if len(car_runway_RTL) < 5:
-            # car_runway_RTL.extend(create_runway(POS_Y[2*randint(1, 2)], 'right_to_left'))
+        if len(car_runway_RTL) < 5:
+            car_runway_RTL.extend(create_runway(POS_Y[2*randint(1, 2)], 'right_to_left'))
 
         if len(car_runway_LTR) < 1:
-            # car_runway_LTR.extend(create_runway(POS_Y[2*randint(1, 2)-1], 'left_to_rigth'))
-            car_runway_LTR.extend(create_runway(POS_Y[1], 'left_to_rigth'))
+            car_runway_LTR.extend(create_runway(POS_Y[2*randint(1, 2)-1], 'left_to_rigth'))
 
         cur_x = max(cur_x, LEFT_BOUND)  # LIMIT BOUND OF SIDE LEFT
         cur_x = min(cur_x, RIGHT_BOUND) # LINIT BOUND OF SIDE RIGHT
         y_id  = max(y_id, 0)            # LIMIT BOUND OF SIDE DOWN
         y_id  = min(y_id, nY-1)         # LIMIT BOUND OF SIDE UP
         
-        ply_x = cur_x
-        ply_y = POS_Y[y_id]
-        ply_stete = 'live'
+        if not BAND_KEYBOUND: ply_stete = 'live'
 
         in_ground = overlab(IMG_PLY, ply_x, ply_y, GROUND) # CHECK PLAYER stay in GROUND
         if in_ground == False:
             ply_stete = 'drowned'
+            # print('test: ', ply_x, ply_y)
 
         n_cars = len(car_runway_LTR)
         for i in range(n_cars):
-            if overlab(IMG_PLY, ply_x, ply_y, car_runway_LTR[i], 'circle'):
-                print(car_runway_LTR[i])
-                ply_x += car_runway_LTR[i][2]
-                cur_x += car_runway_LTR[i][2]
-                # print('hit ', ply_x)
+            if overlab(IMG_PLY, ply_x, ply_y, (car_runway_LTR[i][0], car_runway_LTR[i][1], 40, 20)):
+                ply_stete = 'crash'
+
+        n_cars = len(car_runway_RTL)
+        for i in range(n_cars):
+            if overlab(IMG_PLY, ply_x, ply_y, (car_runway_RTL[i][0], car_runway_RTL[i][1], 40, 20)):
+                ply_stete = 'crash'
+
+        ply_x = cur_x
+        ply_y = POS_Y[y_id]
 
         """ ============ DISPLAY OF GAME ============= """
         fill_scr(COLOR_BLACK)
@@ -293,14 +298,35 @@ def game_loop():
         # draw_gird()
         player(ply_x, ply_y, ply_stete)
         traffic_LTR(car_runway_LTR)
-        # traffic_RTL(car_runway_RTL)
+        traffic_RTL(car_runway_RTL)
 
         draw_rect(0, 70, 25, 495, COLOR_BLACK)    # DRAW BOUND LEFT
         draw_rect(525, 70, 25, 495, COLOR_BLACK)  # DRAW BOUND RIGHT
         draw_bound(COLOR_GREY, 4)                 # DRAW BOUND OF STAGE
         """ ========================================== """
+
+        if ply_stete == 'crash' or ply_stete == 'drowned':
+            # BAND_KEYBOUND = True
+            pass
+
         update_screen()
+        clock_time.tick(FPS)
+
+def game_over():
+    print('game over')
+    while True:
+        # =============== EVENT PROCESSING ===================== #
+        events = pygame.event.get()
+        for ent in events:
+            game_exit(ent)
+
         clock_time.tick(FPS)
 
 # START game loop
 game_loop()
+game_over()
+
+'''   ========= file image ============
+self.image = pygame.image.load("player1.png")
+self.image2 = pygame.transform.flip(self.image, True, False)
+'''
