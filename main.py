@@ -269,6 +269,9 @@ def game_loop():
                 if  key == pygame.K_p:
                     pass
 
+            if BAND_KEYBOUND and ent.type == pygame.KEYDOWN and ent.key == pygame.K_SPACE:
+                BAND_KEYBOUND = False
+
         # ===================== LOGIC GAME ======================= #
         if len(ghost_runway_RTL) < randint(1, 8):
             ghost_runway_RTL.extend(create_runway(POS_Y[2*randint(1, 2)], 'right_to_left'))
@@ -317,26 +320,12 @@ def game_loop():
         """ ========================================== """
 
         if ply_stete == 'crash' or ply_stete == 'drowned':
-            # BAND_KEYBOUND = True
-            pass
+            BAND_KEYBOUND = True
 
         update_screen()
         clock_time.tick(FPS)
 
-def game_over():
-    print('game over, pass space bar to continue')
-    STOP = True
-    while STOP:
-        # =============== EVENT PROCESSING ===================== #
-        events = pygame.event.get()
-        for ent in events:
-            game_exit(ent)
-
-        if ent.type == pygame.KEYDOWN:
-            if ent.key == pygame.K_SPACE:
-                STOP = False
-        clock_time.tick(FPS)
+        
 
 # START game loop
 game_loop()
-game_over()
