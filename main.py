@@ -108,6 +108,7 @@ def player(x, y, state = 'live'):
     else:
         push_img(add_img, x, y)
 def traffic_LTR(ghosts) :
+    # tranffic in form : Left to Right
     n = len(ghosts)
     remove_ghost = set()
     for i in range(n):
@@ -138,6 +139,7 @@ def traffic_LTR(ghosts) :
     ghosts.clear()
     ghosts.extend(ghost_live)
 def traffic_RTL(ghosts) :
+    # tranffic in form : Right to Left 
     n = len(ghosts)
     remove_ghost = set()
     for i in range(n):
@@ -216,29 +218,6 @@ def create_runway(hieght_of_runway, type_of_runway = None, n_ghost = 1) :
 
     return ghosts_runway
 
-def player_die(history_ply):
-    n = len(history_ply)
-    for i in range(n):
-        add_img = None
-
-        x = history_ply[i][0]
-        y = history_ply[i][1]
-        state = history_ply[i][2]
-
-        if state == 'live':
-            add_img = IMG_PLY
-        elif state == 'drowned':
-            add_img = IMG_DROWNED
-            # GAME_OVER = True
-        elif state == 'crash':
-            add_img = IMG_CRASH
-            # GAME_OVER = True
-
-        if add_img == None:
-            draw_rect(x, y, 20, 35, COLOR_BLUE)
-        else:
-            push_img(add_img, x, y)
-
 def game_loop():    
     global GAME_OVER
     global BAND_KEYBOUND
@@ -294,11 +273,15 @@ def game_loop():
                 if  key == pygame.K_p:
                     pass
 
+                if ent.key == pygame.K_c:
+                    ply_die.clear()
+
             if BAND_KEYBOUND and ent.type == pygame.KEYDOWN and ent.key == pygame.K_SPACE:
                 BAND_KEYBOUND = False
                 cur_x = (LEFT_BOUND + RIGHT_BOUND) // 2
                 y_id = 0
                 state = 'live'
+
 
         # ===================== LOGIC GAME ======================= #
         if len(ghost_runway_RTL) < randint(1, 8):
@@ -336,9 +319,6 @@ def game_loop():
             BAND_KEYBOUND = True
             ply_die.append((ply_x, ply_y, ply_stete))
 
-
-        
-
         """ ============ DISPLAY OF GAME ============= """
         fill_scr(COLOR_BLACK)
         
@@ -359,7 +339,16 @@ def game_loop():
         update_screen()
         clock_time.tick(FPS)
 
-        
-
 # START game loop
 game_loop()
+
+'''
+how to play : KEY
+a or arrow left : move lefr
+d or arrow right : move right
+s or arrow down : move down
+w or arrow up : move up
+
+space_bar : live again
+c : clear body
+'''
