@@ -1,5 +1,6 @@
 import pygame
 import time
+import threading
 from random import *
 
 pygame.init()
@@ -23,7 +24,7 @@ IMG_BG = pygame.image.load('img/bg.png')
 IMG_PLY = pygame.image.load('img/player_live.png')
 IMG_CRASH = pygame.image.load('img/player_crash.png')
 IMG_DROWNED = pygame.image.load('img/player_drowned.png')
-IMG_CAR = [pygame.image.load('img/car' + str(i+1) + '.png') for i in range(3)]
+# IMG_CAR = [pygame.image.load('img/car' + str(i+1) + '.png') for i in range(3)]
 
 # SETTING GAME DISPLAY
 SIZE_SCREEN = (WIDTH, HIGHT)
@@ -102,8 +103,9 @@ def player(x, y, state = 'live'):
     else:
         push_img(add_img, x, y)
 
-def traffic(cars) :
+def traffic_LTR(cars) :
     n = len(cars)
+    print(cars)
     remove_car = set()
     for i in range(n):
         car = cars[i]
@@ -119,7 +121,29 @@ def traffic(cars) :
     for i in range(n):
         if i not in remove_car:
             car_live.append(cars[i])
-        
+
+    cars.clear()
+    cars.extend(car_live)
+
+def traffic_RTL(cars) :
+    n = len(cars)
+    print(cars)
+    remove_car = set()
+    for i in range(n):
+        car = cars[i]
+        car_x = car[0]
+        car_y = car[1]
+        speed_car = car[2]
+        draw_rect(car_x, car_y + 5, 40, 22, COLOR_RED)
+        cars[i][0] += speed_car      # CHANGE SPEED OF cars[i]
+        if car_x < 0 :
+            remove_car.add(i)
+    
+    car_live = []
+    for i in range(n):
+        if i not in remove_car:
+            car_live.append(cars[i])
+
     cars.clear()
     cars.extend(car_live)
 
@@ -136,10 +160,37 @@ def overlab(img, x_img, y_img, obj) :
     y_overlab = (img_y <= obj_y + obj_hieght and img_y + img_hieght >= obj_y)
     return x_overlab and y_overlab;
 
+def create_runway(hieght_of_runway, type_of_runway = None) :
+    cars_runway = list()
+    n_car = randint(1, 5)
+    speed_car = randint(1, 5)
+
+    if type_of_runway == 'left_to_rigth':
+        start_x_car = randint(-20, -10)
+        cars_runway.append([start_x_car, hieght_of_runway, speed_car])
+
+        for i in range(1, n_car):
+            speed_car = randint(1, cars_runway[i-1][2])
+            start_x_car = cars_runway[i-1][0] - 50
+            cars_runway.append([start_x_car, hieght_of_runway, speed_car])
+
+    elif type_of_runway == 'right_to_left':    
+        speed_car = -speed_car
+        start_x_car = randint(WIDTH, WIDTH + 10)
+        cars_runway.append([start_x_car, hieght_of_runway, speed_car])
+
+        for i in range(1, n_car):
+            speed_car = randint(-5, -cars_runway[i-1][2])
+            start_x_car = cars_runway[i-1][0] + 50
+            cars_runway.append([start_x_car, hieght_of_runway, speed_car])
+
+    return cars_runway
+
 GAME_OVER = False
 
 def game_loop():    
     global GAME_OVER
+    global OPEN_RUNWAY1
 
     ply_x = 0
     ply_y = 0
@@ -162,9 +213,8 @@ def game_loop():
     GROUND = (GROUND_X, GROUND_Y, GROUND_WIDTH, GROUND_HIEGHT)
 
     #SET CAR INFO
-    cars = list()
-    n_car = 3
-
+    car_runway_LTR = create_runway(POS_Y[1], 'left_to_rigth') + create_runway(POS_Y[3], 'left_to_rigth')
+    car_runway_RTL = create_runway(POS_Y[2], 'right_to_left') + create_runway(POS_Y[4], 'right_to_left')
 
     while not GAME_OVER:
         # =============== EVENT PROCESSING ===================== #
@@ -192,14 +242,9 @@ def game_loop():
                     pass
 
         # ===================== LOGIC GAME ======================= #
-        len_car = len(cars)
 
-        if len_car < n_car:            # ADD CAR TO SCREEN
-            pos_x_strat = -10
-            random_H = POS_Y[randint(1, 4)]
-            speed_car = randint(1, 3)
-            cars.append([pos_x_strat, random_H, speed_car])
-            
+        
+
         cur_x = max(cur_x, LEFT_BOUND)  # LIMIT BOUND OF SIDE LEFT
         cur_x = min(cur_x, RIGHT_BOUND) # LINIT BOUND OF SIDE RIGHT
         y_id  = max(y_id, 0)            # LIMIT BOUND OF SIDE DOWN
@@ -220,8 +265,9 @@ def game_loop():
         
         # draw_gird()
         player(ply_x, ply_y, ply_stete)
-        traffic(cars)
-        
+        traffic_LTR(car_runway_LTR)
+        traffic_RTL(car_runway_RTL)
+
         draw_rect(0, 70, 25, 495, COLOR_BLACK)    # DRAW BOUND LEFT
         draw_rect(525, 70, 25, 495, COLOR_BLACK)  # DRAW BOUND RIGHT
         draw_bound(COLOR_GREY, 4)                 # DRAW BOUND OF STAGE
