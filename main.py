@@ -26,11 +26,14 @@ IMG_PLY = pygame.image.load('img/player_live.png')
 IMG_CRASH = pygame.image.load('img/player_crash.png')
 IMG_DROWNED = pygame.image.load('img/player_drowned.png')
 IMG_GST = [pygame.image.load('img/ghost' + str(i+1) + '.png') for i in range(3)]
+IMG_NAME_GAME = pygame.image.load('img/namegame.png')
+IMG_ICON = pygame.image.load('img/icon.png')
 
 # SETTING GAME DISPLAY
 SIZE_SCREEN = (WIDTH, HIGHT)
 gameDisplay = pygame.display.set_mode(SIZE_SCREEN)
 pygame.display.set_caption("CROSSINHG")
+pygame.display.set_icon(IMG_ICON)
 
 # SET CLOCK
 clock_time = pygame.time.Clock()
@@ -39,9 +42,9 @@ clock_time = pygame.time.Clock()
 FPS = 30
 
 # SET FONT
-small_font = pygame.font.SysFont("comicsansms", 20)
-med_font = pygame.font.SysFont("comicsansms", 50)
-large_font = pygame.font.SysFont("comicsansms", 80)
+small_font = pygame.font.SysFont("consolas", 20)
+med_font = pygame.font.SysFont("consolas", 50)
+large_font = pygame.font.SysFont("consolas", 80)
 
 # MAIN VALUE OF GAME
 GAME_OVER = False
@@ -240,8 +243,8 @@ def create_runway(hieght_of_runway, type_of_runway = None, n_ghost = 1) :
 
     return ghosts_runway
 def show_score(point):
-    text = small_font.render("Socre: "+str(point), True, COLOR_WHITE)
-    push_img(text, 25, 40)
+    text = small_font.render("SCORE:"+str(point), True, COLOR_WHITE)
+    push_img(text, 25, 52)
 def text_objects(text, color, size) :
     if size == "small":
         textSuf = small_font.render(text, True, color)
@@ -359,6 +362,8 @@ def game_loop():
             BAND_KEYBOUND = True
             ply_die.append((ply_x, ply_y, ply_stete))
 
+        score += 1
+
         """ ============ DISPLAY OF GAME ============= """
         fill_scr(COLOR_BLACK)
         
@@ -374,6 +379,7 @@ def game_loop():
         draw_rect(525, 70, 25, 495, COLOR_BLACK)  # DRAW BOUND RIGHT
         draw_bound(COLOR_GREY, 4)                 # DRAW BOUND OF STAGE
 
+        push_img(IMG_NAME_GAME, 175, 10)
         show_score(score)
         message_to_screen("DEMO", COLOR_GREEN, 285)
         """ ========================================== """
