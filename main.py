@@ -43,11 +43,14 @@ small_font = pygame.font.SysFont("comicsansms", 25)
 med_font = pygame.font.SysFont("comicsansms", 50)
 large_font = pygame.font.SysFont("comicsansms", 80)
 
+# MAIN VALUE OF GAME
+GAME_OVER = False
+BAND_KEYBOUND = False
+
 def game_exit(event):
     if event.type == pygame.QUIT:
         pygame.quit()
         quit()
-
 def draw_gird():
     h = [70, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 35]
     len_h = len(h)
@@ -64,31 +67,29 @@ def draw_gird():
 
     for i in range(len_w):
         pygame.draw.line(gameDisplay, COLOR_WHITE, (w[i], 0), (w[i], HIGHT), 2);
-
 def draw_bound(color = COLOR_WHITE, size_line = 2):
     draw_line(25, 70, 525, 70, color, size_line)
     draw_line(525, 70, 525, 565, color, size_line)
     draw_line(25, 565, 525, 565, color, size_line)
     draw_line(25, 70, 25, 565, color, size_line)
-
 def update_screen():
+    # update portion of all screen
     pygame.display.update()
-
 def draw_line(x1, y1, x2, y2, color = COLOR_WHITE, size_line = 2):
+    # Draw Line
     pygame.draw.line(gameDisplay, color, (x1, y1), (x2, y2), size_line)
-
 def draw_rect(pos_x, pos_y, widht_rect, height_rect, color = COLOR_WHITE):
+    # Draw Rectangle
     pygame.draw.rect(gameDisplay, color, [pos_x, pos_y, widht_rect, height_rect])
-
 def draw_circle(x, y, redius, color = COLOR_WHITE) :
+    # draw Circle
     pygame.draw.circle(gameDisplay, color, (x, y), int(redius))
-
-def push_img(img, x, y): # push image to screen in position (x, y)
+def push_img(img, x, y):
+    # push image to screen in position (x, y)
     gameDisplay.blit(img, (x, y))
-
-def fill_scr(color):     # fill color on the screen of windows
+def fill_scr(color):
+    # fill color on the screen of windows
     gameDisplay.fill(color)
-
 def player(x, y, state = 'live'):
     global GAME_OVER
     add_img = None
@@ -106,7 +107,6 @@ def player(x, y, state = 'live'):
         draw_rect(x, y, 20, 35, COLOR_BLUE)
     else:
         push_img(add_img, x, y)
-
 def traffic_LTR(ghosts) :
     n = len(ghosts)
     remove_ghost = set()
@@ -137,7 +137,6 @@ def traffic_LTR(ghosts) :
 
     ghosts.clear()
     ghosts.extend(ghost_live)
-
 def traffic_RTL(ghosts) :
     n = len(ghosts)
     remove_ghost = set()
@@ -169,7 +168,6 @@ def traffic_RTL(ghosts) :
 
     ghosts.clear()
     ghosts.extend(ghost_live)
-
 def overlab(img, x_img, y_img, obj, type_obj = 'rect') :
     img_x = x_img
     img_y = y_img
@@ -196,7 +194,6 @@ def overlab(img, x_img, y_img, obj, type_obj = 'rect') :
                 return True
         return False
     return False
-
 def create_runway(hieght_of_runway, type_of_runway = None, n_ghost = 1) :
     ghosts_runway = list()
     type_ghost = randint(1, 3)
@@ -219,13 +216,9 @@ def create_runway(hieght_of_runway, type_of_runway = None, n_ghost = 1) :
 
     return ghosts_runway
 
-GAME_OVER = False
-
 def game_loop():    
     global GAME_OVER
-    global OPEN_RUNWAY1
-
-    BAND_KEYBOUND = False 
+    global BAND_KEYBOUND
 
     LEFT_BOUND = 30
     N_STEP_X = 15
@@ -331,13 +324,17 @@ def game_loop():
         clock_time.tick(FPS)
 
 def game_over():
-    print('game over')
-    while True:
+    print('game over, pass space bar to continue')
+    STOP = True
+    while STOP:
         # =============== EVENT PROCESSING ===================== #
         events = pygame.event.get()
         for ent in events:
             game_exit(ent)
 
+        if ent.type == pygame.KEYDOWN:
+            if ent.key == pygame.K_SPACE:
+                STOP = False
         clock_time.tick(FPS)
 
 # START game loop
