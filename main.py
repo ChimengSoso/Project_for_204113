@@ -154,7 +154,8 @@ def game_loop():
         ply_x = CUR_X
         ply_y = POS_Y[y_id]
 
-        # if ply_x 
+        in_ground = overlab(IMG_PLY, ply_x, ply_y, GROUND) # CHECK PLAYER stay in GROUND
+        
 
         """ ============ DISPLAY OF GAME ============= """
         fill_scr(COLOR_BLACK)
@@ -165,11 +166,7 @@ def game_loop():
         draw_bound(COLOR_GREY, 4)                 # DRAW BOUND OF STAGE
 
         player(ply_x, ply_y)
-        if overlab(IMG_PLY, ply_x, ply_y, GROUND): # CHECK PLAYER stay in GROUND
-            print("Stay in Ground")
-        else:
-            print("Stay in Water")
-
+        
         """ ========================================== """
         update_screen()
         clock_time.tick(FPS)
