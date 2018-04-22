@@ -1,5 +1,6 @@
 import pygame
 import time
+from random import *
 
 pygame.init()
 
@@ -101,6 +102,27 @@ def player(x, y, state = 'live'):
     else:
         push_img(add_img, x, y)
 
+def traffic(cars) :
+    n = len(cars)
+    remove_car = set()
+    for i in range(n):
+        car = cars[i]
+        car_x = car[0]
+        car_y = car[1]
+        speed_car = car[2]
+        draw_rect(car_x, car_y + 5, 40, 22, COLOR_RED)
+        cars[i][0] += speed_car      # CHANGE SPEED OF cars[i]
+        if car_x >= WIDTH :
+            remove_car.add(i)
+    
+    car_live = []
+    for i in range(n):
+        if i not in remove_car:
+            car_live.append(cars[i])
+        
+    cars.clear()
+    cars.extend(car_live)
+
 def overlab(img, x_img, y_img, obj) :
     img_x = x_img
     img_y = y_img
@@ -132,14 +154,20 @@ def game_loop():
     nY = len(POS_Y)
     y_id = 0
 
-
+    # SET GROUND INFO
     GROUND_X = 25
     GROUND_Y = 295
     GROUND_WIDTH = 500
     GROUND_HIEGHT = 270
     GROUND = (GROUND_X, GROUND_Y, GROUND_WIDTH, GROUND_HIEGHT)
 
+    #SET CAR INFO
+    cars = list()
+    n_car = 3
+
+
     while not GAME_OVER:
+        # =============== EVENT PROCESSING ===================== #
         events = pygame.event.get()
         for ent in events:
             game_exit(ent)
@@ -163,8 +191,15 @@ def game_loop():
                 if  key == pygame.K_p:
                     pass
 
+        # ===================== LOGIC GAME ======================= #
+        len_car = len(cars)
 
-
+        if len_car < n_car:            # ADD CAR TO SCREEN
+            pos_x_strat = -10
+            random_H = POS_Y[randint(1, 4)]
+            speed_car = randint(1, 3)
+            cars.append([pos_x_strat, random_H, speed_car])
+            
         cur_x = max(cur_x, LEFT_BOUND)  # LIMIT BOUND OF SIDE LEFT
         cur_x = min(cur_x, RIGHT_BOUND) # LINIT BOUND OF SIDE RIGHT
         y_id  = max(y_id, 0)            # LIMIT BOUND OF SIDE DOWN
@@ -182,12 +217,14 @@ def game_loop():
         fill_scr(COLOR_BLACK)
         
         push_img(IMG_BG, 25, 70)                  # DRAW BACKGROUND STAGE
+        
+        # draw_gird()
+        player(ply_x, ply_y, ply_stete)
+        traffic(cars)
+        
         draw_rect(0, 70, 25, 495, COLOR_BLACK)    # DRAW BOUND LEFT
         draw_rect(525, 70, 25, 495, COLOR_BLACK)  # DRAW BOUND RIGHT
         draw_bound(COLOR_GREY, 4)                 # DRAW BOUND OF STAGE
-        # draw_gird()
-        player(ply_x, ply_y, ply_stete)
-        
         """ ========================================== """
         update_screen()
         clock_time.tick(FPS)
