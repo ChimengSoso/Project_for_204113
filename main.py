@@ -39,7 +39,7 @@ clock_time = pygame.time.Clock()
 FPS = 30
 
 # SET FONT
-small_font = pygame.font.SysFont("comicsansms", 25)
+small_font = pygame.font.SysFont("comicsansms", 20)
 med_font = pygame.font.SysFont("comicsansms", 50)
 large_font = pygame.font.SysFont("comicsansms", 80)
 
@@ -107,6 +107,28 @@ def player(x, y, state = 'live'):
         draw_rect(x, y, 20, 35, COLOR_BLUE)
     else:
         push_img(add_img, x, y)
+def player_die(history_ply):
+    n = len(history_ply)
+    for i in range(n):
+        x = history_ply[i][0]
+        y = history_ply[i][1]
+        state = history_ply[i][2]
+
+        add_img = None
+
+        if state == 'live':
+            add_img = IMG_PLY
+        elif state == 'drowned':
+            add_img = IMG_DROWNED
+            # GAME_OVER = True
+        elif state == 'crash':
+            add_img = IMG_CRASH
+            # GAME_OVER = True
+
+        if add_img == None:
+            draw_rect(x, y, 20, 35, COLOR_BLUE)
+        else:
+            push_img(add_img, x, y)
 def traffic_LTR(ghosts) :
     # tranffic in form : Left to Right
     n = len(ghosts)
@@ -217,6 +239,22 @@ def create_runway(hieght_of_runway, type_of_runway = None, n_ghost = 1) :
             ghosts_runway.append([start_x_ghost, hieght_of_runway, type_ghost])
 
     return ghosts_runway
+def show_score(point):
+    text = small_font.render("Socre: "+str(point), True, COLOR_WHITE)
+    push_img(text, 25, 40)
+def text_objects(text, color, size) :
+    if size == "small":
+        textSuf = small_font.render(text, True, color)
+    elif size == "medium":
+        textSuf = med_font.render(text, True, color)
+    elif size == "large":
+        textSuf = large_font.render(text, True, color)
+
+    return textSuf, textSuf.get_rect()
+def message_to_screen(msg, color, y_displace = 0, size = "small"):
+    textSuf, text_rect = text_objects(msg, color, size)
+    text_rect.center = (WIDTH / 2), (HIGHT / 2) + y_displace
+    push_img(textSuf, text_rect.x, text_rect.y)
 
 def game_loop():    
     global GAME_OVER
@@ -247,6 +285,8 @@ def game_loop():
     ghost_runway_RTL = create_runway(POS_Y[2], 'right_to_left') + create_runway(POS_Y[4], 'right_to_left')
 
     ply_die = list()
+
+    score = 0
 
     while not GAME_OVER:
         # =============== EVENT PROCESSING ===================== #
@@ -330,10 +370,12 @@ def game_loop():
         traffic_LTR(ghost_runway_LTR)
         traffic_RTL(ghost_runway_RTL)
 
-
         draw_rect(0, 70, 25, 495, COLOR_BLACK)    # DRAW BOUND LEFT
         draw_rect(525, 70, 25, 495, COLOR_BLACK)  # DRAW BOUND RIGHT
         draw_bound(COLOR_GREY, 4)                 # DRAW BOUND OF STAGE
+
+        show_score(score)
+        message_to_screen("DEMO", COLOR_GREEN, 285)
         """ ========================================== """
 
         update_screen()
