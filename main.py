@@ -20,9 +20,13 @@ COLOR_GREY = (91, 91, 91)
 # SETTING IMAGE
 IMG_BG = pygame.image.load('img/bg.png')
 IMG_PLY = pygame.image.load('img/player_live.png')
+IMG_CRASH = pygame.image.load('img/player_crash.png')
+IMG_DROWNED = pygame.image.load('img/player_drowned.png')
+IMG_CAR = [pygame.image.load('img/car' + str(i+1) + '.png') for i in range(3)]
 
 # SETTING GAME DISPLAY
-gameDisplay = pygame.display.set_mode([WIDTH, HIGHT])
+SIZE_SCREEN = (WIDTH, HIGHT)
+gameDisplay = pygame.display.set_mode(SIZE_SCREEN)
 pygame.display.set_caption("CROSSINHG")
 
 # SET CLOCK
@@ -53,17 +57,16 @@ def draw_gird():
         w[i] += w[i-1]
 
     for i in range(len_h):
-        pygame.draw.line(gameDisplay, WHITE, (0, h[i]), (WIDTH, h[i]), 2);
+        pygame.draw.line(gameDisplay, COLOR_WHITE, (0, h[i]), (WIDTH, h[i]), 2);
 
     for i in range(len_w):
-        pygame.draw.line(gameDisplay, WHITE, (w[i], 0), (w[i], HIGHT), 2);
+        pygame.draw.line(gameDisplay, COLOR_WHITE, (w[i], 0), (w[i], HIGHT), 2);
 
 def draw_bound(color = COLOR_WHITE, size_line = 2):
     draw_line(25, 70, 525, 70, color, size_line)
     draw_line(525, 70, 525, 565, color, size_line)
     draw_line(25, 565, 525, 565, color, size_line)
     draw_line(25, 70, 25, 565, color, size_line)
-
 
 def update_screen():
     pygame.display.update()
@@ -80,9 +83,23 @@ def push_img(img, x, y): # push image to screen in position (x, y)
 def fill_scr(color):     # fill color on the screen of windows
     gameDisplay.fill(color)
 
-def player(x, y):
-    # draw_rect(x, y, 20, 35, COLOR_BLUE)
-    push_img(IMG_PLY, x, y)
+def player(x, y, state = 'live'):
+    global GAME_OVER
+    add_img = None
+
+    if state == 'live':
+        add_img = IMG_PLY
+    elif state == 'drowned':
+        add_img = IMG_DROWNED
+        # GAME_OVER = True
+    elif state == 'crash':
+        add_img = IMG_CRASH
+        # GAME_OVER = True
+
+    if add_img == None:
+        draw_rect(x, y, 20, 35, COLOR_BLUE)
+    else:
+        push_img(add_img, x, y)
 
 def overlab(img, x_img, y_img, obj) :
     img_x = x_img
@@ -97,9 +114,11 @@ def overlab(img, x_img, y_img, obj) :
     y_overlab = (img_y <= obj_y + obj_hieght and img_y + img_hieght >= obj_y)
     return x_overlab and y_overlab;
 
-def game_loop():
-    GAME_OVER = False
-    
+GAME_OVER = False
+
+def game_loop():    
+    global GAME_OVER
+
     ply_x = 0
     ply_y = 0
 
@@ -107,9 +126,9 @@ def game_loop():
     N_STEP_X = 15
     STEP_X = 35
     RIGHT_BOUND = LEFT_BOUND + (N_STEP_X-1) * STEP_X - 20
-    CUR_X = (LEFT_BOUND + RIGHT_BOUND) // 2
+    cur_x = (LEFT_BOUND + RIGHT_BOUND) // 2
     
-    POS_Y = [530, 482, 438, 392, 345, 296, 250, 205, 165, 120, 75]
+    POS_Y = [530, 482, 438, 392, 345, 298, 256, 212, 168, 123, 78]
     nY = len(POS_Y)
     y_id = 0
 
@@ -129,11 +148,11 @@ def game_loop():
                 key = ent.key
                 if key == pygame.K_LEFT or key == pygame.K_a:
                     # x_id -= 1
-                    CUR_X -= STEP_X
+                    cur_x -= STEP_X
 
                 if key == pygame.K_RIGHT or key == pygame.K_d:
                     # x_id += 1
-                    CUR_X += STEP_X
+                    cur_x += STEP_X
 
                 if key == pygame.K_UP or key == pygame.K_w:
                     y_id += 1
@@ -146,26 +165,28 @@ def game_loop():
 
 
 
-        CUR_X = max(CUR_X, LEFT_BOUND)  # LIMIT BOUND OF SIDE LEFT
-        CUR_X = min(CUR_X, RIGHT_BOUND) # LINIT BOUND OF SIDE RIGHT
+        cur_x = max(cur_x, LEFT_BOUND)  # LIMIT BOUND OF SIDE LEFT
+        cur_x = min(cur_x, RIGHT_BOUND) # LINIT BOUND OF SIDE RIGHT
         y_id  = max(y_id, 0)            # LIMIT BOUND OF SIDE DOWN
         y_id  = min(y_id, nY-1)         # LIMIT BOUND OF SIDE UP
         
-        ply_x = CUR_X
+        ply_x = cur_x
         ply_y = POS_Y[y_id]
+        ply_stete = 'live'
 
         in_ground = overlab(IMG_PLY, ply_x, ply_y, GROUND) # CHECK PLAYER stay in GROUND
-        
+        if in_ground == False:
+            ply_stete = 'drowned'
 
         """ ============ DISPLAY OF GAME ============= """
         fill_scr(COLOR_BLACK)
-        # draw_gird()
+        
         push_img(IMG_BG, 25, 70)                  # DRAW BACKGROUND STAGE
         draw_rect(0, 70, 25, 495, COLOR_BLACK)    # DRAW BOUND LEFT
         draw_rect(525, 70, 25, 495, COLOR_BLACK)  # DRAW BOUND RIGHT
         draw_bound(COLOR_GREY, 4)                 # DRAW BOUND OF STAGE
-
-        player(ply_x, ply_y)
+        # draw_gird()
+        player(ply_x, ply_y, ply_stete)
         
         """ ========================================== """
         update_screen()
