@@ -216,6 +216,29 @@ def create_runway(hieght_of_runway, type_of_runway = None, n_ghost = 1) :
 
     return ghosts_runway
 
+def player_die(history_ply):
+    n = len(history_ply)
+    for i in range(n):
+        add_img = None
+
+        x = history_ply[i][0]
+        y = history_ply[i][1]
+        state = history_ply[i][2]
+
+        if state == 'live':
+            add_img = IMG_PLY
+        elif state == 'drowned':
+            add_img = IMG_DROWNED
+            # GAME_OVER = True
+        elif state == 'crash':
+            add_img = IMG_CRASH
+            # GAME_OVER = True
+
+        if add_img == None:
+            draw_rect(x, y, 20, 35, COLOR_BLUE)
+        else:
+            push_img(add_img, x, y)
+
 def game_loop():    
     global GAME_OVER
     global BAND_KEYBOUND
@@ -244,6 +267,8 @@ def game_loop():
     ghost_runway_LTR = create_runway(POS_Y[1], 'left_to_rigth') + create_runway(POS_Y[3], 'left_to_rigth')
     ghost_runway_RTL = create_runway(POS_Y[2], 'right_to_left') + create_runway(POS_Y[4], 'right_to_left')
 
+    ply_die = list()
+
     while not GAME_OVER:
         # =============== EVENT PROCESSING ===================== #
         events = pygame.event.get()
@@ -271,6 +296,9 @@ def game_loop():
 
             if BAND_KEYBOUND and ent.type == pygame.KEYDOWN and ent.key == pygame.K_SPACE:
                 BAND_KEYBOUND = False
+                cur_x = (LEFT_BOUND + RIGHT_BOUND) // 2
+                y_id = 0
+                state = 'live'
 
         # ===================== LOGIC GAME ======================= #
         if len(ghost_runway_RTL) < randint(1, 8):
@@ -283,6 +311,9 @@ def game_loop():
         cur_x = min(cur_x, RIGHT_BOUND) # LINIT BOUND OF SIDE RIGHT
         y_id  = max(y_id, 0)            # LIMIT BOUND OF SIDE DOWN
         y_id  = min(y_id, nY-1)         # LIMIT BOUND OF SIDE UP
+
+        ply_x = cur_x
+        ply_y = POS_Y[y_id]
         
         if not BAND_KEYBOUND: ply_stete = 'live'
 
@@ -301,8 +332,12 @@ def game_loop():
             if overlab(IMG_PLY, ply_x, ply_y, (ghost_runway_RTL[i][0], ghost_runway_RTL[i][1], 40, 20)):
                 ply_stete = 'crash'
 
-        ply_x = cur_x
-        ply_y = POS_Y[y_id]
+        if not BAND_KEYBOUND and (ply_stete == 'crash' or ply_stete == 'drowned'):
+            BAND_KEYBOUND = True
+            ply_die.append((ply_x, ply_y, ply_stete))
+
+
+        
 
         """ ============ DISPLAY OF GAME ============= """
         fill_scr(COLOR_BLACK)
@@ -310,17 +345,16 @@ def game_loop():
         push_img(IMG_BG, 25, 70)                  # DRAW BACKGROUND STAGE
         
         # draw_gird()
+        player_die(ply_die)
         player(ply_x, ply_y, ply_stete)
         traffic_LTR(ghost_runway_LTR)
         traffic_RTL(ghost_runway_RTL)
+
 
         draw_rect(0, 70, 25, 495, COLOR_BLACK)    # DRAW BOUND LEFT
         draw_rect(525, 70, 25, 495, COLOR_BLACK)  # DRAW BOUND RIGHT
         draw_bound(COLOR_GREY, 4)                 # DRAW BOUND OF STAGE
         """ ========================================== """
-
-        if ply_stete == 'crash' or ply_stete == 'drowned':
-            BAND_KEYBOUND = True
 
         update_screen()
         clock_time.tick(FPS)
