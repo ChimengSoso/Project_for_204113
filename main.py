@@ -258,27 +258,46 @@ def create_runway(hieght_of_runway, type_of_runway = None, n_ghost = 1) :
             ghosts_runway.append([start_x_ghost, hieght_of_runway, type_ghost])
 
     return ghosts_runway
-def create_waterway(hieght_of_runway, type_of_runway,  type_raft, n_raft = 1):
+def create_waterway(hieght_of_runway, type_of_runway,  type_raft, raft_current = list() ,n_raft = 1):
     raft_waterway = list()
-    
+    if type_raft == 1:
+        width_raft = IMG_RAFT[0].get_width()
+    else:
+        width_raft = IMG_RAFT[1].get_width()
+
     if type_of_runway == 'left_to_rigth':
-        start_x_raft = randint(-20, -10)
+        min_x = WIDTH + 100000
+        for mem in raft_current:
+            min_x = min(min_x, mem[0])
+
+        if min_x > 0:
+            min_x = 0
+
+        start_x_raft = randint(min_x-5*width_raft, min_x-width_raft)
+
         raft_waterway.append([start_x_raft, hieght_of_runway, type_raft])
 
         for i in range(1, n_raft):
-            start_x_raft = raft_waterway[i-1][0] - 50
+            start_x_raft = raft_waterway[i-1][0] - width_raft
             raft_waterway.append([start_x_raft, hieght_of_runway, type_raft])
 
     else: #elif type_of_runway == 'right_to_left':
-        start_x_raft = randint(WIDTH, WIDTH + 10)
+        max_x = -WIDTH - 100000
+        for mem in raft_current:
+            max_x = max(max_x, mem[0])
+
+        if max_x <= WIDTH:
+            max_x = WIDTH
+
+        start_x_raft = randint(max_x+width_raft, max_x+5*width_raft)
+
         raft_waterway.append([start_x_raft, hieght_of_runway, type_raft])
 
         for i in range(1, n_raft):
-            start_x_raft = raft_waterway[i-1][0] + 50
+            start_x_raft = raft_waterway[i-1][0] + width_raft
             raft_waterway.append([start_x_raft, hieght_of_runway, type_raft])
 
     return raft_waterway
-
 def waterway_LTR(rafts):
     # waterway in form : Left to Right
     n = len(rafts)
@@ -291,13 +310,40 @@ def waterway_LTR(rafts):
         # draw_rect(ghost_x, ghost_y, 40, 20, COLOR_RED)
         
         if raft_type == 1:
-            speed_raft = 3
+            speed_raft = 2
         elif raft_type == 2:
-            speed_raft = 5
+            speed_raft = 3
 
         push_img(IMG_RAFT[raft_type-1], raft_x, raft_y)
         rafts[i][0] += speed_raft      # CHANGE SPEED OF ghosts[i]
         if raft_x >= WIDTH :
+            remove_raft.add(i)
+    
+    raft_live = []
+    for i in range(n):
+        if i not in remove_raft:
+            raft_live.append(rafts[i])
+    rafts.clear()
+    rafts.extend(raft_live)
+def waterway_RTL(rafts):
+    # waterway in form : Left to Right
+    n = len(rafts)
+    remove_raft = set()
+    for i in range(n):
+        raft = rafts[i][0]
+        raft_x = rafts[i][0]
+        raft_y = rafts[i][1]
+        raft_type = rafts[i][2]
+        # draw_rect(ghost_x, ghost_y, 40, 20, COLOR_RED)
+        
+        if raft_type == 1:
+            speed_raft = -2
+        elif raft_type == 2:
+            speed_raft = -3
+
+        push_img(IMG_RAFT[raft_type-1], raft_x, raft_y)
+        rafts[i][0] += speed_raft      # CHANGE SPEED OF ghosts[i]
+        if raft_x <= 0:
             remove_raft.add(i)
     
     raft_live = []
@@ -386,6 +432,22 @@ def game_loop():
         if len(ghost_runway_LTR) < randint(1, 8):
             ghost_runway_LTR.extend(create_runway(POS_Y[2*randint(1, 2)-1], 'left_to_rigth'))
 
+        if len(raft_waterway_LTR) < 30 and randint(0,1):
+            chioce_rw = [(7, 2), (9, 1)]
+            select = randint(0, 1)
+            num_raft = randint(1, 5)
+            no_rw = chioce_rw[select][0]
+            type_rw = chioce_rw[select][1]
+            raft_waterway_LTR.extend(create_waterway(POS_Y[no_rw], 'left_to_rigth', type_rw, raft_waterway_LTR, num_raft))
+
+        if len(raft_waterway_RTL) < 30 and randint(0,1):
+            chioce_rw = [(6, 1), (8, 2)]
+            select = randint(0, 1)
+            num_raft = randint(1, 5)
+            no_rw = chioce_rw[select][0]
+            type_rw = chioce_rw[select][1]
+            raft_waterway_RTL.extend(create_waterway(POS_Y[no_rw], 'right_to_left', type_rw, raft_waterway_RTL, num_raft))
+
         cur_x = max(cur_x, LEFT_BOUND)  # LIMIT BOUND OF SIDE LEFT
         cur_x = min(cur_x, RIGHT_BOUND) # LINIT BOUND OF SIDE RIGHT
         y_id  = max(y_id, 0)            # LIMIT BOUND OF SIDE DOWN
@@ -437,12 +499,15 @@ def game_loop():
         fill_scr(COLOR_BLACK)
         
         push_img(IMG_BG, 25, 70)                  # DRAW BACKGROUND STAGE
-        waterway_LTR(raft_waterway_LTR)
-        # draw_gird()
-        player_die(ply_die)
-        player(ply_x, ply_y, ply_stete)
-        traffic_LTR(ghost_runway_LTR)
-        traffic_RTL(ghost_runway_RTL)
+        
+        waterway_LTR(raft_waterway_LTR)           # DRAW RAFT LEFT TO RIGHT
+        waterway_RTL(raft_waterway_RTL)           # DRAW RAFT RIGHT TO LEFT
+
+        player_die(ply_die)                       # SHOW HISTORY OF DEAD'PLAYER
+        player(ply_x, ply_y, ply_stete)           # SHOW PLAYER LIVE
+        
+        traffic_LTR(ghost_runway_LTR)             # DRAW TRAFFIC GHOST FROM LEFT TO RIGHT
+        traffic_RTL(ghost_runway_RTL)             # DRAW TRAFFIC GHOST FROM RIGHT TO LEFT
 
         draw_rect(0, 70, 25, 495, COLOR_BLACK)    # DRAW BOUND LEFT
         draw_rect(525, 70, 25, 495, COLOR_BLACK)  # DRAW BOUND RIGHT
@@ -453,6 +518,8 @@ def game_loop():
         message_to_screen("DEMO", COLOR_GREEN, 285)
         
         if BAND_KEYBOUND : message_to_screen("Pass SPACE_BAR for revive", COLOR_GREEN, 15)
+
+        # draw_gird()
         """ ========================================== """
 
         update_screen()
