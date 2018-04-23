@@ -370,7 +370,7 @@ def waterway_RTL(rafts):
     rafts.clear()
     rafts.extend(raft_live)
 def coin_show(coin):
-    n = len(coin_list)
+    n = len(coin)
     for i in range(n):
         x = coin[0]
         y = coin[1]
@@ -430,12 +430,11 @@ def game_loop():
         grave_list.append((POS_GRAVE[i], 80))
 
     TOUCH_GRAVE = False
-    TOUCH_WATER = False
 
     #SET COIN INFO
     WIDTH_COIN = IMG_COIN.get_width()
     HIEGHT_COIN = IMG_COIN.get_height()
-    COIN_KEEPED = False
+    COIN_SHOW = True
     LIMIT_COIN = 1
 
     POS_COIN = list()
@@ -444,6 +443,8 @@ def game_loop():
     for i in range(1, 6):
         POS_COIN.append(((grave_list[i][0] + grave_list[i-1][0])//2, grave_list[i][1]))
         set_coin.append(i-1)
+
+    select_coin = randint(0, 5)
 
     #SET PLAYER LIST DIE
     ply_die = list()
@@ -601,10 +602,12 @@ def game_loop():
             if overlab(IMG_PLY, ply_x, ply_y, (pos_x_strl, pos_y_strl+15, WIDTH_STRL, HEIGHT_STRL-10)):
                 ply_stete = 'crash'
 
-        if not BAND_KEYBOUND and (ply_stete == 'crash' or ply_stete == 'drowned'):
-            # BAND_KEYBOUND = True
-            # ply_die.append((ply_x, ply_y, ply_stete))
-            pass
+        if COIN_SHOW == False:
+            COIN_SHOW = True
+            n_remain_coin = len(set_coin)
+            chioce_coin = randint(0, n_remain_coin)
+            select_coin = set_coin[chioce_coin]
+            set_coin.pop(chioce_coin)
 
         # score += 1
         if score <= 1000:
@@ -625,6 +628,10 @@ def game_loop():
         ply_x = cur_x
         ply_y = POS_Y[y_id]
 
+        if not BAND_KEYBOUND and (ply_stete == 'crash' or ply_stete == 'drowned'):
+            # BAND_KEYBOUND = True
+            # ply_die.append((ply_x, ply_y, ply_stete))
+            pass
         """ ============ DISPLAY OF GAME ============= """
         fill_scr(COLOR_BLACK)
         
@@ -637,6 +644,9 @@ def game_loop():
         waterway_LTR(raft_waterway_LTR)           # DRAW RAFT LEFT TO RIGHT
         waterway_RTL(raft_waterway_RTL)           # DRAW RAFT RIGHT TO LEFT
 
+        if COIN_SHOW : 
+            coin_show(POS_COIN[select_coin])
+            
         if (BAND_KEYBOUND == False) :player(ply_x, ply_y, ply_stete)           # SHOW PLAYER LIVE
 
         traffic_LTR(ghost_runway_LTR)             # DRAW TRAFFIC GHOST FROM LEFT TO RIGHT
@@ -651,6 +661,8 @@ def game_loop():
         push_img(IMG_NAME_GAME, 175, 10)
         show_score(score)
         message_to_screen("DEMO", COLOR_GREEN, 285)
+
+
         
         if BAND_KEYBOUND : message_to_screen("Pass SPACE_BAR for revive", COLOR_GREEN, 15)
 
