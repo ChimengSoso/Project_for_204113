@@ -85,6 +85,7 @@ def game_exit(event):
     if event.type == pygame.QUIT:
         pygame.quit()
         quit()
+
 def draw_gird():
     h = [70, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 35]
     len_h = len(h)
@@ -116,24 +117,31 @@ def draw_bound(color = COLOR_WHITE, size_line = 2):
     draw_line(525, 70, 525, 565, color, size_line)
     draw_line(25, 565, 525, 565, color, size_line)
     draw_line(25, 70, 25, 565, color, size_line)
+
 def update_screen():
     # update portion of all screen
     pygame.display.update()
+
 def draw_line(x1, y1, x2, y2, color = COLOR_WHITE, size_line = 2):
     # Draw Line
     pygame.draw.line(gameDisplay, color, (x1, y1), (x2, y2), size_line)
-def draw_rect(pos_x, pos_y, widht_rect, height_rect, color = COLOR_WHITE):
+
+def draw_rect(pos_x, pos_y, widht_rect, height_rect, color = COLOR_WHITE, stoke = 0):
     # Draw Rectangle
-    pygame.draw.rect(gameDisplay, color, [pos_x, pos_y, widht_rect, height_rect])
+    pygame.draw.rect(gameDisplay, color, [pos_x, pos_y, widht_rect, height_rect], stoke)
+
 def draw_circle(x, y, redius, color = COLOR_WHITE) :
     # draw Circle
     pygame.draw.circle(gameDisplay, color, (x, y), int(redius))
+
 def push_img(img, x, y):
     # push image to screen in position (x, y)
     gameDisplay.blit(img, (x, y))
+
 def fill_scr(color):
     # fill color on the screen of windows
     gameDisplay.fill(color)
+
 def player(x, y, state = 'live'):
     global GAME_OVER
     add_img = None
@@ -151,6 +159,7 @@ def player(x, y, state = 'live'):
         draw_rect(x, y, 20, 35, COLOR_BLUE)
     else:
         push_img(add_img, x, y)
+
 def player_die(history_ply):
     n = len(history_ply)
     for i in range(n):
@@ -173,6 +182,7 @@ def player_die(history_ply):
             draw_rect(x, y, 20, 35, COLOR_BLUE)
         else:
             push_img(add_img, x, y)
+
 def traffic_LTR(ghosts) :
     # tranffic in form : Left to Right
     n = len(ghosts)
@@ -204,6 +214,7 @@ def traffic_LTR(ghosts) :
 
     ghosts.clear()
     ghosts.extend(ghost_live)
+
 def traffic_RTL(ghosts) :
     # tranffic in form : Right to Left 
     n = len(ghosts)
@@ -236,6 +247,7 @@ def traffic_RTL(ghosts) :
 
     ghosts.clear()
     ghosts.extend(ghost_live)
+
 def overlab(img, x_img, y_img, obj, type_obj = 'rect') :
     img_x = x_img
     img_y = y_img
@@ -262,13 +274,16 @@ def overlab(img, x_img, y_img, obj, type_obj = 'rect') :
                 return True
         return False
     return False
+
 def show_score(point):
     text = small_font.render("SCORE:"+str(point), True, COLOR_WHITE)
     push_img(text, 25, 52)
+
 def show_level(level):
     text = small_font.render("LEVEL:"+str(level), True, COLOR_WHITE)
     text_width = text.get_width()
     push_img(text, WIDTH-25-text_width, 52)
+
 def text_objects(text, color, size) :
     if size == "small":
         textSuf = small_font.render(text, True, color)
@@ -278,10 +293,12 @@ def text_objects(text, color, size) :
         textSuf = large_font.render(text, True, color)
 
     return textSuf, textSuf.get_rect()
+
 def message_to_screen(msg, color, y_displace = 0, size = "small"):
     textSuf, text_rect = text_objects(msg, color, size)
     text_rect.center = (WIDTH / 2), (HIGHT / 2) + y_displace
     push_img(textSuf, text_rect.x, text_rect.y)
+
 def create_runway(hieght_of_runway, type_of_runway = None, n_ghost = 1) :
     ghosts_runway = list()
     type_ghost = randint(1, 3)
@@ -303,6 +320,7 @@ def create_runway(hieght_of_runway, type_of_runway = None, n_ghost = 1) :
             ghosts_runway.append([start_x_ghost, hieght_of_runway, type_ghost])
 
     return ghosts_runway
+
 def create_waterway(hieght_of_runway, type_of_runway,  type_raft, raft_current = list() ,n_raft = 1):
     raft_waterway = list()
     if type_raft == 1:
@@ -343,6 +361,7 @@ def create_waterway(hieght_of_runway, type_of_runway,  type_raft, raft_current =
             raft_waterway.append([start_x_raft+5, hieght_of_runway, type_raft])
 
     return raft_waterway
+
 def waterway_LTR(rafts):
     # waterway in form : Left to Right
     n = len(rafts)
@@ -370,6 +389,7 @@ def waterway_LTR(rafts):
             raft_live.append(rafts[i])
     rafts.clear()
     rafts.extend(raft_live)
+
 def waterway_RTL(rafts):
     # waterway in form : Left to Right
     n = len(rafts)
@@ -397,6 +417,7 @@ def waterway_RTL(rafts):
             raft_live.append(rafts[i])
     rafts.clear()
     rafts.extend(raft_live)
+
 def coin_show(coin):
     n = len(coin)
     for i in range(n):
@@ -409,6 +430,22 @@ def game_loop():
     global BAND_KEYBOUND
     global FPS
     global PLAY_STRL
+
+
+    GAME_INTRO = True
+    while (GAME_INTRO) :
+        events = pygame.event.get()
+        for ent in events:
+            game_exit(ent)
+
+            if ent.type == pygame.KEYDOWN:
+                if ent.key == pygame.K_c:
+                    GAME_INTRO = False
+
+
+    ################################################################
+    ################################################################
+    ################################################################
 
     level = 1
 
@@ -713,7 +750,7 @@ def game_loop():
         if BAND_KEYBOUND :                        # PROCRESS START WHEN PLAYER DIE
             show_best_score(score, level)
 
-        #draw_gird()
+        # draw_gird()
         """ ========================================== """
 
         update_screen()
