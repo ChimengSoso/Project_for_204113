@@ -434,7 +434,7 @@ def game_loop():
     #SET COIN INFO
     WIDTH_COIN = IMG_COIN.get_width()
     HIEGHT_COIN = IMG_COIN.get_height()
-    COIN_SHOW = True
+    COIN_SHOW = False
     LIMIT_COIN = 1
 
     POS_COIN = list()
@@ -602,11 +602,25 @@ def game_loop():
             if overlab(IMG_PLY, ply_x, ply_y, (pos_x_strl, pos_y_strl+15, WIDTH_STRL, HEIGHT_STRL-10)):
                 ply_stete = 'crash'
 
+        pos_x_coin = POS_COIN[select_coin][0]
+        pos_y_coin = POS_COIN[select_coin][1]
+        if overlab(IMG_PLY, ply_x, ply_y, (pos_x_coin, pos_y_coin, WIDTH_COIN, HIEGHT_COIN)):
+            COIN_SHOW = False
+            score += 200
+
         if COIN_SHOW == False:
             COIN_SHOW = True
             n_remain_coin = len(set_coin)
-            chioce_coin = randint(0, n_remain_coin)
+            
+            if n_remain_coin <= 0:                # WHEN KEEP COIN ALL STATE
+                set_coin = [i for i in range(5)]
+                n_remain_coin = 5
+                cur_x = (LEFT_BOUND + RIGHT_BOUND) // 2
+                y_id = 0
+
+            chioce_coin = randint(0, n_remain_coin-1)
             select_coin = set_coin[chioce_coin]
+
             set_coin.pop(chioce_coin)
 
         # score += 1
@@ -646,7 +660,8 @@ def game_loop():
 
         if COIN_SHOW : 
             coin_show(POS_COIN[select_coin])
-            
+            print(set_coin)
+
         if (BAND_KEYBOUND == False) :player(ply_x, ply_y, ply_stete)           # SHOW PLAYER LIVE
 
         traffic_LTR(ghost_runway_LTR)             # DRAW TRAFFIC GHOST FROM LEFT TO RIGHT
