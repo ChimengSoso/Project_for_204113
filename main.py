@@ -21,13 +21,16 @@ COLOR_GREY = (91, 91, 91)
 
 # SETTING IMAGE
 IMG_BG = pygame.image.load('img/bg.png')
+IMG_NAME_GAME = pygame.image.load('img/namegame.png')
+IMG_ICON = pygame.image.load('img/icon.png')
+
 IMG_PLY = pygame.image.load('img/player_live.png')
 IMG_CRASH = pygame.image.load('img/player_crash.png')
 IMG_DROWNED = pygame.image.load('img/player_drowned.png')
+
 IMG_GST = [pygame.image.load('img/ghost' + str(i+1) + '.png') for i in range(3)]
-IMG_NAME_GAME = pygame.image.load('img/namegame.png')
-IMG_ICON = pygame.image.load('img/icon.png')
 IMG_RAFT = [pygame.image.load('img/raft'+str(i+1)+'.png') for i in range(2)]
+IMG_STRL = pygame.image.load('img/stroller.png')
 
 # SETTING GAME DISPLAY
 SIZE_SCREEN = (WIDTH, HIGHT)
@@ -49,6 +52,7 @@ large_font = pygame.font.SysFont("consolas", 80)
 # MAIN VALUE OF GAME
 GAME_OVER = False
 BAND_KEYBOUND = False
+PLAY_STRL = False
 
 def game_exit(event):
     if event.type == pygame.QUIT:
@@ -60,7 +64,7 @@ def draw_gird():
     for i in range(1, len_h):
         h[i] += h[i-1]
 
-    w = [25, 500, 25]
+    w = [25, 46, 46, 45, 45, 45, 45, 45, 45, 45, 46, 46, 25]
     len_w = len(w)
     for i in range(1, len_w):
         w[i] += w[i-1]
@@ -70,6 +74,7 @@ def draw_gird():
 
     for i in range(len_w):
         pygame.draw.line(gameDisplay, COLOR_WHITE, (w[i], 0), (w[i], HIGHT), 2);
+
 def draw_bound(color = COLOR_WHITE, size_line = 2):
     draw_line(25, 70, 525, 70, color, size_line)
     draw_line(525, 70, 525, 565, color, size_line)
@@ -291,11 +296,11 @@ def create_waterway(hieght_of_runway, type_of_runway,  type_raft, raft_current =
 
         start_x_raft = randint(max_x+width_raft, max_x+5*width_raft)
 
-        raft_waterway.append([start_x_raft + 5, hieght_of_runway, type_raft])
+        raft_waterway.append([start_x_raft, hieght_of_runway, type_raft])
 
         for i in range(1, n_raft):
             start_x_raft = raft_waterway[i-1][0] + width_raft
-            raft_waterway.append([start_x_raft, hieght_of_runway, type_raft])
+            raft_waterway.append([start_x_raft+5, hieght_of_runway, type_raft])
 
     return raft_waterway
 def waterway_LTR(rafts):
@@ -352,11 +357,14 @@ def waterway_RTL(rafts):
             raft_live.append(rafts[i])
     rafts.clear()
     rafts.extend(raft_live)
+def stroller_way():
+    global PLAY_STRL
 
 def game_loop():
     global GAME_OVER
     global BAND_KEYBOUND
     global FPS
+    global PLAY_STRL
 
     LEFT_BOUND = 30
     N_STEP_X = 15
@@ -381,6 +389,16 @@ def game_loop():
     #SET ghost INFO
     ghost_runway_LTR = create_runway(POS_Y[1], 'left_to_rigth') + create_runway(POS_Y[3], 'left_to_rigth')
     ghost_runway_RTL = create_runway(POS_Y[2], 'right_to_left') + create_runway(POS_Y[4], 'right_to_left')
+
+    #SET STROLLER INFO
+    TIME_PER_APPEAR = FPS * 10
+    WIDTH_STRL = IMG_STRL.get_width() 
+    HEIGHT_STRL = IMG_STRL.get_height()
+    SPEED_STRL = 5
+    
+    time_stroller = 0
+    pos_x_strl = -WIDTH_STRL
+    pos_y_strl = POS_Y[5] - 10
 
     #SET RAFT INFO
     raft_waterway_LTR = create_waterway(POS_Y[7], 'left_to_rigth', 2) + create_waterway(POS_Y[9], 'left_to_rigth', 1)
@@ -426,6 +444,7 @@ def game_loop():
 
 
         # ===================== LOGIC GAME ======================= #
+
         if len(ghost_runway_RTL) < randint(1, 8):
             ghost_runway_RTL.extend(create_runway(POS_Y[2*randint(1, 2)], 'right_to_left'))
 
@@ -488,7 +507,8 @@ def game_loop():
             hieght_raft = IMG_RAFT[type_raft-1].get_height()
             pos_x_raft = raft_waterway_LTR[i][0]
             pos_y_raft = raft_waterway_LTR[i][1]
-            if overlab(IMG_PLY, ply_x, ply_y, (pos_x_raft+10, pos_y_raft, width_raft-10, hieght_raft)):
+            if BAND_KEYBOUND : break
+            if overlab(IMG_PLY, ply_x, ply_y, (pos_x_raft, pos_y_raft, width_raft, hieght_raft)):
                 ply_stete = 'live'
                 if type_raft == 1:
                     cur_x += 2
@@ -502,19 +522,36 @@ def game_loop():
             hieght_raft = IMG_RAFT[type_raft-1].get_height()
             pos_x_raft = raft_waterway_RTL[i][0]
             pos_y_raft = raft_waterway_RTL[i][1]
-            if overlab(IMG_PLY, ply_x, ply_y, (pos_x_raft+10, pos_y_raft, width_raft-10, hieght_raft)):
+            if BAND_KEYBOUND : break
+            if overlab(IMG_PLY, ply_x, ply_y, (pos_x_raft, pos_y_raft, width_raft, hieght_raft)):
                 ply_stete = 'live'
                 if type_raft == 1:
                     cur_x -= 2
                 elif type_raft == 2:
                     cur_x -= 3
 
-        if overlab(IMG_PLY, ply_x, ply_y, (25, 70, 500, 45)):
+        if overlab(IMG_PLY, ply_x, ply_y, (25, 70, 500, 45)): # CHECK OVERLAB IN EACH GROUND
             ply_stete = 'live'
 
+        if (PLAY_STRL == False) :
+            time_stroller += 1
+        
+        if time_stroller >= TIME_PER_APPEAR:
+            time_stroller = 0
+            PLAY_STRL = True
+
+        if PLAY_STRL:
+            pos_x_strl += SPEED_STRL
+            if pos_x_strl >= WIDTH:
+                PLAY_STRL = False
+                pos_x_strl = -WIDTH_STRL
+
+            if overlab(IMG_PLY, ply_x, ply_y, (pos_x_strl, pos_y_strl+15, WIDTH_STRL, HEIGHT_STRL-10)):
+                ply_stete = 'crash'
+
         if not BAND_KEYBOUND and (ply_stete == 'crash' or ply_stete == 'drowned'):
-            # BAND_KEYBOUND = True
-            # ply_die.append((ply_x, ply_y, ply_stete))
+            BAND_KEYBOUND = True
+            ply_die.append((ply_x, ply_y, ply_stete))
             pass
 
         # score += 1
@@ -550,6 +587,9 @@ def game_loop():
         traffic_LTR(ghost_runway_LTR)             # DRAW TRAFFIC GHOST FROM LEFT TO RIGHT
         traffic_RTL(ghost_runway_RTL)             # DRAW TRAFFIC GHOST FROM RIGHT TO LEFT
 
+        push_img(IMG_STRL, pos_x_strl, pos_y_strl)# DRAW STROLLER
+        print(pos_x_strl, pos_y_strl)
+
         draw_rect(0, 70, 25, 495, COLOR_BLACK)    # DRAW BOUND LEFT
         draw_rect(525, 70, 25, 495, COLOR_BLACK)  # DRAW BOUND RIGHT
         draw_bound(COLOR_GREY, 4)                 # DRAW BOUND OF STAGE
@@ -560,7 +600,7 @@ def game_loop():
         
         if BAND_KEYBOUND : message_to_screen("Pass SPACE_BAR for revive", COLOR_GREEN, 15)
 
-        # draw_gird()
+        #draw_gird()
         """ ========================================== """
 
         update_screen()
