@@ -369,6 +369,12 @@ def waterway_RTL(rafts):
             raft_live.append(rafts[i])
     rafts.clear()
     rafts.extend(raft_live)
+def coin_show(coin):
+    n = len(coin_list)
+    for i in range(n):
+        x = coin[0]
+        y = coin[1]
+        push_img(IMG_COIN, x, y)
 
 def game_loop():
     global GAME_OVER
@@ -416,14 +422,33 @@ def game_loop():
 
     #SET GRAVE INFO
     WIDTH_GRAVE = IMG_GRAVE.get_width()
+    HIEGHT_GRAVE = IMG_GRAVE.get_height()
     POS_GRAVE = [(i+1) * WIDTH_GRAVE + (i*60) for i in range(6)]
     N_GRAVE = len(POS_GRAVE)
     grave_list = list()
     for i in range(N_GRAVE):
         grave_list.append((POS_GRAVE[i], 80))
 
+    TOUCH_GRAVE = False
+    TOUCH_WATER = False
+
+    #SET COIN INFO
+    WIDTH_COIN = IMG_COIN.get_width()
+    HIEGHT_COIN = IMG_COIN.get_height()
+    COIN_KEEPED = False
+    LIMIT_COIN = 1
+
+    POS_COIN = list()
+    set_coin = list()
+    n_coin = 0
+    for i in range(1, 6):
+        POS_COIN.append(((grave_list[i][0] + grave_list[i-1][0])//2, grave_list[i][1]))
+        set_coin.append(i-1)
+
+    #SET PLAYER LIST DIE
     ply_die = list()
 
+    #SET SCORE
     score = 0
 
     while not GAME_OVER:
@@ -462,7 +487,6 @@ def game_loop():
 
 
         # ===================== LOGIC GAME ======================= #
-
         if len(ghost_runway_RTL) < randint(1, 8):
             ghost_runway_RTL.extend(create_runway(POS_Y[2*randint(1, 2)], 'right_to_left'))
 
@@ -484,6 +508,16 @@ def game_loop():
             no_rw = chioce_rw[select][0]
             type_rw = chioce_rw[select][1]
             raft_waterway_RTL.extend(create_waterway(POS_Y[no_rw], 'right_to_left', type_rw, raft_waterway_RTL, num_raft))
+
+        TOUCH_GRAVE = False
+        for i in range(N_GRAVE):
+            grave_x = grave_list[i][0]
+            grave_y = grave_list[i][1]
+            if overlab(IMG_PLY, ply_x, ply_y, (grave_x+10, grave_y, WIDTH_GRAVE-10, HIEGHT_GRAVE)):
+                TOUCH_GRAVE = True
+
+        if TOUCH_GRAVE:
+            y_id -= 1
 
         cur_x = max(cur_x, LEFT_BOUND)  # LIMIT BOUND OF SIDE LEFT
         cur_x = min(cur_x, RIGHT_BOUND) # LINIT BOUND OF SIDE RIGHT
