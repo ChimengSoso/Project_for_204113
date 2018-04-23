@@ -39,6 +39,7 @@ IMG_GRAVE = pygame.image.load('img/grave.png')
 IMG_COIN = pygame.image.load('img/coin.png')
 
 IMG_SB = pygame.image.load('img/small_bound.png')
+IMG_MENU = pygame.image.load('img/menu.png')
 
 # SETTING GAME DISPLAY
 SIZE_SCREEN = (WIDTH, HIGHT)
@@ -425,6 +426,44 @@ def coin_show(coin):
         y = coin[1]
         push_img(IMG_COIN, x, y)
 
+def how_to_play():
+    
+    while True:
+        events = pygame.event.get()
+        for ent in events:
+            game_exit(ent)
+
+            if ent.type == pygame.KEYDOWN:
+                if ent.key == pygame.K_b:
+                    return
+
+        fill_scr(COLOR_BLACK)
+
+        SHIF = 50
+
+        message_to_screen("HOW TO PLAY", COLOR_WHITE, -200 + SHIF, 'medium')
+
+        message_to_screen('pass a or arrow left  : move left ', COLOR_WHITE,-120+ SHIF)
+        message_to_screen('pass d or arrow right : move right', COLOR_WHITE,-100+ SHIF)
+        message_to_screen('pass s or arrow down  : move down ', COLOR_WHITE,-80+ SHIF)
+        message_to_screen('pass w or arrow up    : move up   ', COLOR_WHITE,-60+ SHIF)
+
+        message_to_screen('pass c : clear body', COLOR_WHITE, 0+ SHIF)
+        message_to_screen('pass b to back', COLOR_WHITE,30+ SHIF)
+
+        message_to_screen('Don\'t be Crashed, Don\'t be drowned!!', COLOR_RED, 200)
+
+        update_screen()
+        clock_time.tick(FPS)
+    """how to play : KEY
+pass a or arrow left  : move lefr
+pass d or arrow right : move right
+pass s or arrow down  : move down
+pass w or arrow up    : move up
+
+space_bar : live again
+c : clear body"""
+
 def game_loop():
     global GAME_OVER
     global BAND_KEYBOUND
@@ -442,6 +481,19 @@ def game_loop():
                 if ent.key == pygame.K_c:
                     GAME_INTRO = False
 
+                if ent.key == pygame.K_h:
+                    how_to_play()
+
+
+        fill_scr(COLOR_BLACK)
+        width_img = IMG_MENU.get_width()
+        gameDisplay.blit(IMG_MENU, (WIDTH//2-width_img//2, 100))
+
+        message_to_screen("Pass C to Play the Game!", COLOR_WHITE, 50)
+        message_to_screen("Pass H to See How to Play", COLOR_WHITE, 85)
+
+        update_screen()
+        clock_time.tick(FPS)
 
     ################################################################
     ################################################################
