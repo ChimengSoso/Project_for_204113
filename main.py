@@ -33,6 +33,7 @@ IMG_RAFT = [pygame.image.load('img/raft'+str(i+1)+'.png') for i in range(2)]
 IMG_STRL = pygame.image.load('img/stroller.png')
 
 IMG_GRAVE = pygame.image.load('img/grave.png')
+IMG_COIN = pygame.image.load('img/coin.png')
 
 # SETTING GAME DISPLAY
 SIZE_SCREEN = (WIDTH, HIGHT)
@@ -80,7 +81,11 @@ def draw_gird():
 def grave_show(grave_list):
     n = len(grave_list)
     for i in range(n):
-        push_img(IMG_GRAVE, grave_list[i][0], grave_list[i][1])
+        x = grave_list[i][0]
+        y = grave_list[i][1]
+        push_img(IMG_GRAVE, x, y)
+        # if i > 0: # show coin all
+        #     push_img(IMG_COIN, (x + grave_list[i-1][0])//2, y)
 
 def draw_bound(color = COLOR_WHITE, size_line = 2):
     draw_line(25, 70, 525, 70, color, size_line)
