@@ -466,13 +466,37 @@ def game_loop():
 
         n_ghosts = len(ghost_runway_LTR)
         for i in range(n_ghosts):
-            if overlab(IMG_PLY, ply_x, ply_y, (ghost_runway_LTR[i][0], ghost_runway_LTR[i][1], 40, 20)):
+            type_ghost = ghost_runway_LTR[i][2]
+            width_ghost = IMG_GST[type_ghost-1].get_width()
+            hieght_ghost = IMG_GST[type_ghost-1].get_height()
+            pos_x_ghost = ghost_runway_LTR[i][0]
+            pos_y_ghost = ghost_runway_LTR[i][1]
+            if overlab(IMG_PLY, ply_x, ply_y, (pos_x_ghost, pos_y_ghost, width_ghost, hieght_ghost)):
                 ply_stete = 'crash'
 
         n_ghosts = len(ghost_runway_RTL)
         for i in range(n_ghosts):
-            if overlab(IMG_PLY, ply_x, ply_y, (ghost_runway_RTL[i][0], ghost_runway_RTL[i][1], 40, 20)):
+            type_ghost = ghost_runway_RTL[i][2]
+            width_ghost = IMG_GST[type_ghost-1].get_width()
+            hieght_ghost = IMG_GST[type_ghost-1].get_height()
+            pos_x_ghost = ghost_runway_RTL[i][0]
+            pos_y_ghost = ghost_runway_RTL[i][1]
+            if overlab(IMG_PLY, ply_x, ply_y, (pos_x_ghost, pos_y_ghost, width_ghost, hieght_ghost)):
                 ply_stete = 'crash'
+
+        n_raft = len(raft_waterway_LTR)
+        for i in range(n_raft):
+            type_raft = raft_waterway_LTR[i][2]
+            width_raft = IMG_RAFT[type_raft-1].get_width()
+            hieght_raft = IMG_RAFT[type_raft-1].get_height()
+            pos_x_raft = raft_waterway_LTR[i][0]
+            pos_y_raft = raft_waterway_LTR[i][1]
+            if overlab(IMG_PLY, ply_x, ply_y, (pos_x_raft, pos_y_raft, width_raft-10, hieght_raft)):
+                ply_stete = 'live'
+                if type_raft == 1:
+                    cur_x += 2
+                elif type_raft == 2:
+                    cur_x += 3
 
         if not BAND_KEYBOUND and (ply_stete == 'crash' or ply_stete == 'drowned'):
             # BAND_KEYBOUND = True
