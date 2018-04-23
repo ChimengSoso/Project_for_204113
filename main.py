@@ -6,7 +6,6 @@ from math import *
 
 pygame.init()
 
-
 # SIZE OF SCREEN
 WIDTH = 550
 HIGHT = 600
@@ -28,6 +27,7 @@ IMG_DROWNED = pygame.image.load('img/player_drowned.png')
 IMG_GST = [pygame.image.load('img/ghost' + str(i+1) + '.png') for i in range(3)]
 IMG_NAME_GAME = pygame.image.load('img/namegame.png')
 IMG_ICON = pygame.image.load('img/icon.png')
+IMG_RAFT = [pygame.image.load('img/raft'+str(i+1)+'.png') for i in range(2)]
 
 # SETTING GAME DISPLAY
 SIZE_SCREEN = (WIDTH, HIGHT)
@@ -221,6 +221,22 @@ def overlab(img, x_img, y_img, obj, type_obj = 'rect') :
                 return True
         return False
     return False
+def show_score(point):
+    text = small_font.render("SCORE:"+str(point), True, COLOR_WHITE)
+    push_img(text, 25, 52)
+def text_objects(text, color, size) :
+    if size == "small":
+        textSuf = small_font.render(text, True, color)
+    elif size == "medium":
+        textSuf = med_font.render(text, True, color)
+    elif size == "large":
+        textSuf = large_font.render(text, True, color)
+
+    return textSuf, textSuf.get_rect()
+def message_to_screen(msg, color, y_displace = 0, size = "small"):
+    textSuf, text_rect = text_objects(msg, color, size)
+    text_rect.center = (WIDTH / 2), (HIGHT / 2) + y_displace
+    push_img(textSuf, text_rect.x, text_rect.y)
 def create_runway(hieght_of_runway, type_of_runway = None, n_ghost = 1) :
     ghosts_runway = list()
     type_ghost = randint(1, 3)
@@ -242,26 +258,59 @@ def create_runway(hieght_of_runway, type_of_runway = None, n_ghost = 1) :
             ghosts_runway.append([start_x_ghost, hieght_of_runway, type_ghost])
 
     return ghosts_runway
-def show_score(point):
-    text = small_font.render("SCORE:"+str(point), True, COLOR_WHITE)
-    push_img(text, 25, 52)
-def text_objects(text, color, size) :
-    if size == "small":
-        textSuf = small_font.render(text, True, color)
-    elif size == "medium":
-        textSuf = med_font.render(text, True, color)
-    elif size == "large":
-        textSuf = large_font.render(text, True, color)
+def create_waterway(hieght_of_runway, type_of_runway,  type_raft, n_raft = 1):
+    raft_waterway = list()
+    
+    if type_of_runway == 'left_to_rigth':
+        start_x_raft = randint(-20, -10)
+        raft_waterway.append([start_x_raft, hieght_of_runway, type_raft])
 
-    return textSuf, textSuf.get_rect()
-def message_to_screen(msg, color, y_displace = 0, size = "small"):
-    textSuf, text_rect = text_objects(msg, color, size)
-    text_rect.center = (WIDTH / 2), (HIGHT / 2) + y_displace
-    push_img(textSuf, text_rect.x, text_rect.y)
+        for i in range(1, n_raft):
+            start_x_raft = raft_waterway[i-1][0] - 50
+            raft_waterway.append([start_x_raft, hieght_of_runway, type_raft])
 
-def game_loop():    
+    else: #elif type_of_runway == 'right_to_left':
+        start_x_raft = randint(WIDTH, WIDTH + 10)
+        raft_waterway.append([start_x_raft, hieght_of_runway, type_raft])
+
+        for i in range(1, n_raft):
+            start_x_raft = raft_waterway[i-1][0] + 50
+            raft_waterway.append([start_x_raft, hieght_of_runway, type_raft])
+
+    return raft_waterway
+
+def waterway_LTR(rafts):
+    # waterway in form : Left to Right
+    n = len(rafts)
+    remove_raft = set()
+    for i in range(n):
+        raft = rafts[i][0]
+        raft_x = rafts[i][0]
+        raft_y = rafts[i][1]
+        raft_type = rafts[i][2]
+        # draw_rect(ghost_x, ghost_y, 40, 20, COLOR_RED)
+        
+        if raft_type == 1:
+            speed_raft = 3
+        elif raft_type == 2:
+            speed_raft = 5
+
+        push_img(IMG_RAFT[raft_type-1], raft_x, raft_y)
+        rafts[i][0] += speed_raft      # CHANGE SPEED OF ghosts[i]
+        if raft_x >= WIDTH :
+            remove_raft.add(i)
+    
+    raft_live = []
+    for i in range(n):
+        if i not in remove_raft:
+            raft_live.append(rafts[i])
+    rafts.clear()
+    rafts.extend(raft_live)
+
+def game_loop():
     global GAME_OVER
     global BAND_KEYBOUND
+    global FPS
 
     LEFT_BOUND = 30
     N_STEP_X = 15
@@ -286,6 +335,10 @@ def game_loop():
     #SET ghost INFO
     ghost_runway_LTR = create_runway(POS_Y[1], 'left_to_rigth') + create_runway(POS_Y[3], 'left_to_rigth')
     ghost_runway_RTL = create_runway(POS_Y[2], 'right_to_left') + create_runway(POS_Y[4], 'right_to_left')
+
+    #SET RAFT INFO
+    raft_waterway_LTR = create_waterway(POS_Y[7], 'left_to_rigth', 2) + create_waterway(POS_Y[9], 'left_to_rigth', 1)
+    raft_waterway_RTL = create_waterway(POS_Y[6], 'right_to_left', 1) + create_waterway(POS_Y[8], 'right_to_left', 2)
 
     ply_die = list()
 
@@ -360,16 +413,31 @@ def game_loop():
                 ply_stete = 'crash'
 
         if not BAND_KEYBOUND and (ply_stete == 'crash' or ply_stete == 'drowned'):
-            BAND_KEYBOUND = True
-            ply_die.append((ply_x, ply_y, ply_stete))
+            # BAND_KEYBOUND = True
+            # ply_die.append((ply_x, ply_y, ply_stete))
+            pass
 
-        score += 1
+        # score += 1
+        if score <= 1000:
+            FPS = 40
+        elif score <= 2000:
+            FPS = 50
+        elif score <= 3000:
+            FPS = 60
+        elif score <= 4000:
+            FPS = 70
+        elif score <= 5000:
+            FPS = 80
+        elif score <= 6000:
+            FPS = 90
+        else:
+            FPS = 100
 
         """ ============ DISPLAY OF GAME ============= """
         fill_scr(COLOR_BLACK)
         
         push_img(IMG_BG, 25, 70)                  # DRAW BACKGROUND STAGE
-        
+        waterway_LTR(raft_waterway_LTR)
         # draw_gird()
         player_die(ply_die)
         player(ply_x, ply_y, ply_stete)
@@ -383,6 +451,7 @@ def game_loop():
         push_img(IMG_NAME_GAME, 175, 10)
         show_score(score)
         message_to_screen("DEMO", COLOR_GREEN, 285)
+        
         if BAND_KEYBOUND : message_to_screen("Pass SPACE_BAR for revive", COLOR_GREEN, 15)
         """ ========================================== """
 
