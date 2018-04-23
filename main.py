@@ -279,7 +279,7 @@ def create_waterway(hieght_of_runway, type_of_runway,  type_raft, raft_current =
 
         for i in range(1, n_raft):
             start_x_raft = raft_waterway[i-1][0] - width_raft
-            raft_waterway.append([start_x_raft, hieght_of_runway, type_raft])
+            raft_waterway.append([start_x_raft-5, hieght_of_runway, type_raft])
 
     else: #elif type_of_runway == 'right_to_left':
         max_x = -WIDTH - 100000
@@ -291,7 +291,7 @@ def create_waterway(hieght_of_runway, type_of_runway,  type_raft, raft_current =
 
         start_x_raft = randint(max_x+width_raft, max_x+5*width_raft)
 
-        raft_waterway.append([start_x_raft, hieght_of_runway, type_raft])
+        raft_waterway.append([start_x_raft + 5, hieght_of_runway, type_raft])
 
         for i in range(1, n_raft):
             start_x_raft = raft_waterway[i-1][0] + width_raft
@@ -452,9 +452,6 @@ def game_loop():
         cur_x = min(cur_x, RIGHT_BOUND) # LINIT BOUND OF SIDE RIGHT
         y_id  = max(y_id, 0)            # LIMIT BOUND OF SIDE DOWN
         y_id  = min(y_id, nY-1)         # LIMIT BOUND OF SIDE UP
-
-        ply_x = cur_x
-        ply_y = POS_Y[y_id]
         
         if not BAND_KEYBOUND: ply_stete = 'live'
 
@@ -491,7 +488,7 @@ def game_loop():
             hieght_raft = IMG_RAFT[type_raft-1].get_height()
             pos_x_raft = raft_waterway_LTR[i][0]
             pos_y_raft = raft_waterway_LTR[i][1]
-            if overlab(IMG_PLY, ply_x, ply_y, (pos_x_raft, pos_y_raft, width_raft-10, hieght_raft)):
+            if overlab(IMG_PLY, ply_x, ply_y, (pos_x_raft+10, pos_y_raft, width_raft-10, hieght_raft)):
                 ply_stete = 'live'
                 if type_raft == 1:
                     cur_x += 2
@@ -505,14 +502,15 @@ def game_loop():
             hieght_raft = IMG_RAFT[type_raft-1].get_height()
             pos_x_raft = raft_waterway_RTL[i][0]
             pos_y_raft = raft_waterway_RTL[i][1]
-            if overlab(IMG_PLY, ply_x, ply_y, (pos_x_raft, pos_y_raft, width_raft-10, hieght_raft)):
+            if overlab(IMG_PLY, ply_x, ply_y, (pos_x_raft+10, pos_y_raft, width_raft-10, hieght_raft)):
                 ply_stete = 'live'
                 if type_raft == 1:
                     cur_x -= 2
                 elif type_raft == 2:
                     cur_x -= 3
 
-        if 
+        if overlab(IMG_PLY, ply_x, ply_y, (25, 70, 500, 45)):
+            ply_stete = 'live'
 
         if not BAND_KEYBOUND and (ply_stete == 'crash' or ply_stete == 'drowned'):
             # BAND_KEYBOUND = True
@@ -534,6 +532,9 @@ def game_loop():
             FPS = 90
         else:
             FPS = 100
+
+        ply_x = cur_x
+        ply_y = POS_Y[y_id]
 
         """ ============ DISPLAY OF GAME ============= """
         fill_scr(COLOR_BLACK)
