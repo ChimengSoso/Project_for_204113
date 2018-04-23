@@ -624,20 +624,7 @@ def game_loop():
             set_coin.pop(chioce_coin)
 
         # score += 1
-        if score <= 1000:
-            FPS = 40
-        elif score <= 2000:
-            FPS = 50
-        elif score <= 3000:
-            FPS = 60
-        elif score <= 4000:
-            FPS = 70
-        elif score <= 5000:
-            FPS = 80
-        elif score <= 6000:
-            FPS = 90
-        else:
-            FPS = 100
+        FPS = 10*(3+(score//1000))
 
         ply_x = cur_x
         ply_y = POS_Y[y_id]
