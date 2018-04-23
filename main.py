@@ -498,6 +498,22 @@ def game_loop():
                 elif type_raft == 2:
                     cur_x += 3
 
+        n_raft = len(raft_waterway_RTL)
+        for i in range(n_raft):
+            type_raft = raft_waterway_RTL[i][2]
+            width_raft = IMG_RAFT[type_raft-1].get_width()
+            hieght_raft = IMG_RAFT[type_raft-1].get_height()
+            pos_x_raft = raft_waterway_RTL[i][0]
+            pos_y_raft = raft_waterway_RTL[i][1]
+            if overlab(IMG_PLY, ply_x, ply_y, (pos_x_raft, pos_y_raft, width_raft-10, hieght_raft)):
+                ply_stete = 'live'
+                if type_raft == 1:
+                    cur_x -= 2
+                elif type_raft == 2:
+                    cur_x -= 3
+
+        if 
+
         if not BAND_KEYBOUND and (ply_stete == 'crash' or ply_stete == 'drowned'):
             # BAND_KEYBOUND = True
             # ply_die.append((ply_x, ply_y, ply_stete))
