@@ -343,6 +343,7 @@ def game_loop():
         
         if not BAND_KEYBOUND: ply_stete = 'live'
 
+
         in_ground = overlab(IMG_PLY, ply_x, ply_y, GROUND) # CHECK PLAYER stay in GROUND
         if in_ground == False:
             ply_stete = 'drowned'
@@ -382,6 +383,7 @@ def game_loop():
         push_img(IMG_NAME_GAME, 175, 10)
         show_score(score)
         message_to_screen("DEMO", COLOR_GREEN, 285)
+        if BAND_KEYBOUND : message_to_screen("Pass SPACE_BAR for revive", COLOR_GREEN, 15)
         """ ========================================== """
 
         update_screen()
