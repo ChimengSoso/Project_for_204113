@@ -32,6 +32,8 @@ IMG_GST = [pygame.image.load('img/ghost' + str(i+1) + '.png') for i in range(3)]
 IMG_RAFT = [pygame.image.load('img/raft'+str(i+1)+'.png') for i in range(2)]
 IMG_STRL = pygame.image.load('img/stroller.png')
 
+IMG_GRAVE = pygame.image.load('img/grave.png')
+
 # SETTING GAME DISPLAY
 SIZE_SCREEN = (WIDTH, HIGHT)
 gameDisplay = pygame.display.set_mode(SIZE_SCREEN)
@@ -74,6 +76,11 @@ def draw_gird():
 
     for i in range(len_w):
         pygame.draw.line(gameDisplay, COLOR_WHITE, (w[i], 0), (w[i], HIGHT), 2);
+
+def grave_show(grave_list):
+    n = len(grave_list)
+    for i in range(n):
+        push_img(IMG_GRAVE, grave_list[i][0], grave_list[i][1])
 
 def draw_bound(color = COLOR_WHITE, size_line = 2):
     draw_line(25, 70, 525, 70, color, size_line)
@@ -357,8 +364,6 @@ def waterway_RTL(rafts):
             raft_live.append(rafts[i])
     rafts.clear()
     rafts.extend(raft_live)
-def stroller_way():
-    global PLAY_STRL
 
 def game_loop():
     global GAME_OVER
@@ -403,6 +408,14 @@ def game_loop():
     #SET RAFT INFO
     raft_waterway_LTR = create_waterway(POS_Y[7], 'left_to_rigth', 2) + create_waterway(POS_Y[9], 'left_to_rigth', 1)
     raft_waterway_RTL = create_waterway(POS_Y[6], 'right_to_left', 1) + create_waterway(POS_Y[8], 'right_to_left', 2)
+
+    #SET GRAVE INFO
+    WIDTH_GRAVE = IMG_GRAVE.get_width()
+    POS_GRAVE = [(i+1) * WIDTH_GRAVE + (i*60) for i in range(6)]
+    N_GRAVE = len(POS_GRAVE)
+    grave_list = list()
+    for i in range(N_GRAVE):
+        grave_list.append((POS_GRAVE[i], 80))
 
     ply_die = list()
 
@@ -579,6 +592,8 @@ def game_loop():
         push_img(IMG_BG, 25, 70)                  # DRAW BACKGROUND STAGE
 
         player_die(ply_die)                       # SHOW HISTORY OF DEAD'PLAYER
+
+        grave_show(grave_list)                    # DRAW GRAVE
         
         waterway_LTR(raft_waterway_LTR)           # DRAW RAFT LEFT TO RIGHT
         waterway_RTL(raft_waterway_RTL)           # DRAW RAFT RIGHT TO LEFT
