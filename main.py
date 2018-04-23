@@ -17,7 +17,10 @@ COLOR_RED = (255, 0, 0)
 COLOR_YELLOW = (200, 200, 0)
 COLOR_GREEN = (34, 177, 76)
 COLOR_BLUE = (0, 0, 255)
+COLOR_BLUE_STRONG = (65, 58, 139)
 COLOR_GREY = (91, 91, 91)
+COLOR_BROWN = (147, 83, 0)
+COLOR_GREEN_STRONG = (0, 137, 26)
 
 # SETTING IMAGE
 IMG_BG = pygame.image.load('img/bg.png')
@@ -35,6 +38,8 @@ IMG_STRL = pygame.image.load('img/stroller.png')
 IMG_GRAVE = pygame.image.load('img/grave.png')
 IMG_COIN = pygame.image.load('img/coin.png')
 
+IMG_SB = pygame.image.load('img/small_bound.png')
+
 # SETTING GAME DISPLAY
 SIZE_SCREEN = (WIDTH, HIGHT)
 gameDisplay = pygame.display.set_mode(SIZE_SCREEN)
@@ -45,7 +50,7 @@ pygame.display.set_icon(IMG_ICON)
 clock_time = pygame.time.Clock()
 
 # SET FPS
-FPS = 30
+FPS = 2
 
 # SET FONT
 small_font = pygame.font.SysFont("consolas", 20)
@@ -56,6 +61,25 @@ large_font = pygame.font.SysFont("consolas", 80)
 GAME_OVER = False
 BAND_KEYBOUND = False
 PLAY_STRL = False
+
+best_score = -1
+best_level =  0
+
+
+def show_best_score(score, level):
+    global best_score
+    global best_level
+
+    if score > best_score :
+        best_score = score
+        best_level = level
+
+    push_img(IMG_SB, 80, 230)
+
+    message_to_screen('YOU GOT '+str(score)+' SCORE, LEVEL : '+str(level), COLOR_BROWN, -15)
+    message_to_screen('BEST SCORE is '+str(best_score)+', LEVEL : '+str(best_level), COLOR_BLUE_STRONG, 20)
+
+    message_to_screen("Pass SPACE_BAR for revive", COLOR_GREEN_STRONG, 60)
 
 def game_exit(event):
     if event.type == pygame.QUIT:
@@ -241,6 +265,10 @@ def overlab(img, x_img, y_img, obj, type_obj = 'rect') :
 def show_score(point):
     text = small_font.render("SCORE:"+str(point), True, COLOR_WHITE)
     push_img(text, 25, 52)
+def show_level(level):
+    text = small_font.render("LEVEL:"+str(level), True, COLOR_WHITE)
+    text_width = text.get_width()
+    push_img(text, WIDTH-25-text_width, 52)
 def text_objects(text, color, size) :
     if size == "small":
         textSuf = small_font.render(text, True, color)
@@ -382,6 +410,8 @@ def game_loop():
     global FPS
     global PLAY_STRL
 
+    level = 1
+
     LEFT_BOUND = 30
     N_STEP_X = 15
     STEP_X = 35
@@ -444,7 +474,7 @@ def game_loop():
         POS_COIN.append(((grave_list[i][0] + grave_list[i-1][0])//2, grave_list[i][1]))
         set_coin.append(i-1)
 
-    select_coin = randint(0, 5)
+    select_coin = randint(0, 4)
 
     #SET PLAYER LIST DIE
     ply_die = list()
@@ -485,16 +515,18 @@ def game_loop():
                 cur_x = (LEFT_BOUND + RIGHT_BOUND) // 2
                 y_id = 0
                 state = 'live'
+                score = 0
+                level = 1
 
 
         # ===================== LOGIC GAME ======================= #
-        if len(ghost_runway_RTL) < randint(1, 8):
+        if len(ghost_runway_RTL) < randint(1, 4):
             ghost_runway_RTL.extend(create_runway(POS_Y[2*randint(1, 2)], 'right_to_left'))
 
-        if len(ghost_runway_LTR) < randint(1, 8):
+        if len(ghost_runway_LTR) < randint(1, 4):
             ghost_runway_LTR.extend(create_runway(POS_Y[2*randint(1, 2)-1], 'left_to_rigth'))
 
-        if len(raft_waterway_LTR) < 30 and randint(0,1):
+        if len(raft_waterway_LTR) < randint(20, 50) and randint(0,1):
             chioce_rw = [(7, 2), (9, 1)]
             select = randint(0, 1)
             num_raft = randint(1, 5)
@@ -502,7 +534,7 @@ def game_loop():
             type_rw = chioce_rw[select][1]
             raft_waterway_LTR.extend(create_waterway(POS_Y[no_rw], 'left_to_rigth', type_rw, raft_waterway_LTR, num_raft))
 
-        if len(raft_waterway_RTL) < 30 and randint(0,1):
+        if len(raft_waterway_RTL) < randint(20, 50) and randint(0,1):
             chioce_rw = [(6, 1), (8, 2)]
             select = randint(0, 1)
             num_raft = randint(1, 5)
@@ -514,7 +546,7 @@ def game_loop():
         for i in range(N_GRAVE):
             grave_x = grave_list[i][0]
             grave_y = grave_list[i][1]
-            if overlab(IMG_PLY, ply_x, ply_y, (grave_x+10, grave_y, WIDTH_GRAVE-10, HIEGHT_GRAVE)):
+            if overlab(IMG_PLY, ply_x, ply_y, (grave_x+15, grave_y, WIDTH_GRAVE-15, HIEGHT_GRAVE)):
                 TOUCH_GRAVE = True
 
         if TOUCH_GRAVE:
@@ -612,27 +644,28 @@ def game_loop():
             COIN_SHOW = True
             n_remain_coin = len(set_coin)
             
-            if n_remain_coin <= 0:                # WHEN KEEP COIN ALL STATE
-                set_coin = [i for i in range(5)]
+            if n_remain_coin <= 0:                       # WHEN KEEP COIN ALL STATE
+                set_coin = [i for i in range(5)]         # foctor of LEVEL GAME IS 'score'
                 n_remain_coin = 5
                 cur_x = (LEFT_BOUND + RIGHT_BOUND) // 2
                 y_id = 0
+                level += 1                               # NOT factor, it just show
 
             chioce_coin = randint(0, n_remain_coin-1)
             select_coin = set_coin[chioce_coin]
 
             set_coin.pop(chioce_coin)
 
-        # score += 1
         FPS = 10*(3+(score//1000))
 
+        if not BAND_KEYBOUND and (ply_stete == 'crash' or ply_stete == 'drowned'):
+            BAND_KEYBOUND = True
+            ply_die.append((ply_x, ply_y, ply_stete))
+        
         ply_x = cur_x
         ply_y = POS_Y[y_id]
 
-        if not BAND_KEYBOUND and (ply_stete == 'crash' or ply_stete == 'drowned'):
-            # BAND_KEYBOUND = True
-            # ply_die.append((ply_x, ply_y, ply_stete))
-            pass
+
         """ ============ DISPLAY OF GAME ============= """
         fill_scr(COLOR_BLACK)
         
@@ -645,11 +678,11 @@ def game_loop():
         waterway_LTR(raft_waterway_LTR)           # DRAW RAFT LEFT TO RIGHT
         waterway_RTL(raft_waterway_RTL)           # DRAW RAFT RIGHT TO LEFT
 
-        if COIN_SHOW : 
+        if COIN_SHOW :                            # DRAW COIN TO STAGE
             coin_show(POS_COIN[select_coin])
-            print(set_coin)
 
-        if (BAND_KEYBOUND == False) :player(ply_x, ply_y, ply_stete)           # SHOW PLAYER LIVE
+        if (BAND_KEYBOUND == False) :             # SHOW PLAYER LIVE
+            player(ply_x, ply_y, ply_stete)           
 
         traffic_LTR(ghost_runway_LTR)             # DRAW TRAFFIC GHOST FROM LEFT TO RIGHT
         traffic_RTL(ghost_runway_RTL)             # DRAW TRAFFIC GHOST FROM RIGHT TO LEFT
@@ -660,13 +693,15 @@ def game_loop():
         draw_rect(525, 70, 25, 495, COLOR_BLACK)  # DRAW BOUND RIGHT
         draw_bound(COLOR_GREY, 4)                 # DRAW BOUND OF STAGE
 
-        push_img(IMG_NAME_GAME, 175, 10)
-        show_score(score)
-        message_to_screen("DEMO", COLOR_GREEN, 285)
+        push_img(IMG_NAME_GAME, 175, 10)          # PUSH name of GAME to Screen
 
+        show_score(score)                         # SHOW score ps. it is foctor of level game
+        show_level(level)                         # SHOW level status
 
-        
-        if BAND_KEYBOUND : message_to_screen("Pass SPACE_BAR for revive", COLOR_GREEN, 15)
+        message_to_screen("DEMO", COLOR_GREEN, 285) # tag DEMO for this game
+
+        if BAND_KEYBOUND :                        # PROCRESS START WHEN PLAYER DIE
+            show_best_score(score, level)
 
         #draw_gird()
         """ ========================================== """
