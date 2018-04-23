@@ -550,8 +550,8 @@ def game_loop():
                 ply_stete = 'crash'
 
         if not BAND_KEYBOUND and (ply_stete == 'crash' or ply_stete == 'drowned'):
-            BAND_KEYBOUND = True
-            ply_die.append((ply_x, ply_y, ply_stete))
+            # BAND_KEYBOUND = True
+            # ply_die.append((ply_x, ply_y, ply_stete))
             pass
 
         # score += 1
@@ -589,7 +589,6 @@ def game_loop():
         traffic_RTL(ghost_runway_RTL)             # DRAW TRAFFIC GHOST FROM RIGHT TO LEFT
 
         push_img(IMG_STRL, pos_x_strl, pos_y_strl)# DRAW STROLLER
-        print(pos_x_strl, pos_y_strl)
 
         draw_rect(0, 70, 25, 495, COLOR_BLACK)    # DRAW BOUND LEFT
         draw_rect(525, 70, 25, 495, COLOR_BLACK)  # DRAW BOUND RIGHT
