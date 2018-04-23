@@ -469,7 +469,6 @@ def game_loop():
 
     POS_COIN = list()
     set_coin = list()
-    n_coin = 0
     for i in range(1, 6):
         POS_COIN.append(((grave_list[i][0] + grave_list[i-1][0])//2, grave_list[i][1]))
         set_coin.append(i-1)
@@ -517,16 +516,21 @@ def game_loop():
                 state = 'live'
                 score = 0
                 level = 1
+                set_coin.clear()
+                for i in range(5):
+                    set_coin.append(i)
+
+                select_coin = randint(0, 4)
 
 
         # ===================== LOGIC GAME ======================= #
-        if len(ghost_runway_RTL) < randint(1, 4):
+        if not BAND_KEYBOUND and len(ghost_runway_RTL) < randint(1, 4):
             ghost_runway_RTL.extend(create_runway(POS_Y[2*randint(1, 2)], 'right_to_left'))
 
-        if len(ghost_runway_LTR) < randint(1, 4):
+        if not BAND_KEYBOUND and len(ghost_runway_LTR) < randint(1, 4):
             ghost_runway_LTR.extend(create_runway(POS_Y[2*randint(1, 2)-1], 'left_to_rigth'))
 
-        if len(raft_waterway_LTR) < randint(20, 50) and randint(0,1):
+        if not BAND_KEYBOUND and len(raft_waterway_LTR) < randint(20, 50) and randint(0,1):
             chioce_rw = [(7, 2), (9, 1)]
             select = randint(0, 1)
             num_raft = randint(1, 5)
@@ -534,7 +538,7 @@ def game_loop():
             type_rw = chioce_rw[select][1]
             raft_waterway_LTR.extend(create_waterway(POS_Y[no_rw], 'left_to_rigth', type_rw, raft_waterway_LTR, num_raft))
 
-        if len(raft_waterway_RTL) < randint(20, 50) and randint(0,1):
+        if not BAND_KEYBOUND and len(raft_waterway_RTL) < randint(20, 50) and randint(0,1):
             chioce_rw = [(6, 1), (8, 2)]
             select = randint(0, 1)
             num_raft = randint(1, 5)
@@ -546,11 +550,12 @@ def game_loop():
         for i in range(N_GRAVE):
             grave_x = grave_list[i][0]
             grave_y = grave_list[i][1]
-            if overlab(IMG_PLY, ply_x, ply_y, (grave_x+15, grave_y, WIDTH_GRAVE-15, HIEGHT_GRAVE)):
+            if not BAND_KEYBOUND and overlab(IMG_PLY, ply_x, ply_y, (grave_x+15, grave_y, WIDTH_GRAVE-15, HIEGHT_GRAVE)):
                 TOUCH_GRAVE = True
 
-        if TOUCH_GRAVE:
+        if not BAND_KEYBOUND and TOUCH_GRAVE:
             y_id -= 1
+            TOUCH_GRAVE = False
 
         cur_x = max(cur_x, LEFT_BOUND)  # LIMIT BOUND OF SIDE LEFT
         cur_x = min(cur_x, RIGHT_BOUND) # LINIT BOUND OF SIDE RIGHT
@@ -561,7 +566,7 @@ def game_loop():
 
 
         in_ground = overlab(IMG_PLY, ply_x, ply_y, GROUND) # CHECK PLAYER stay in GROUND
-        if in_ground == False:
+        if not BAND_KEYBOUND and  in_ground == False:
             ply_stete = 'drowned'
             # print('test: ', ply_x, ply_y)
 
@@ -572,7 +577,7 @@ def game_loop():
             hieght_ghost = IMG_GST[type_ghost-1].get_height()
             pos_x_ghost = ghost_runway_LTR[i][0]
             pos_y_ghost = ghost_runway_LTR[i][1]
-            if overlab(IMG_PLY, ply_x, ply_y, (pos_x_ghost, pos_y_ghost, width_ghost, hieght_ghost)):
+            if not BAND_KEYBOUND and overlab(IMG_PLY, ply_x, ply_y, (pos_x_ghost, pos_y_ghost, width_ghost, hieght_ghost)):
                 ply_stete = 'crash'
 
         n_ghosts = len(ghost_runway_RTL)
@@ -582,7 +587,7 @@ def game_loop():
             hieght_ghost = IMG_GST[type_ghost-1].get_height()
             pos_x_ghost = ghost_runway_RTL[i][0]
             pos_y_ghost = ghost_runway_RTL[i][1]
-            if overlab(IMG_PLY, ply_x, ply_y, (pos_x_ghost, pos_y_ghost, width_ghost, hieght_ghost)):
+            if not BAND_KEYBOUND and overlab(IMG_PLY, ply_x, ply_y, (pos_x_ghost, pos_y_ghost, width_ghost, hieght_ghost)):
                 ply_stete = 'crash'
 
         n_raft = len(raft_waterway_LTR)
@@ -615,36 +620,38 @@ def game_loop():
                 elif type_raft == 2:
                     cur_x -= 3
 
-        if overlab(IMG_PLY, ply_x, ply_y, (25, 70, 500, 45)): # CHECK OVERLAB IN EACH GROUND
+        if not BAND_KEYBOUND and overlab(IMG_PLY, ply_x, ply_y, (25, 70, 500, 45)): # CHECK OVERLAB IN EACH GROUND
             ply_stete = 'live'
 
-        if (PLAY_STRL == False) :
+        if  (PLAY_STRL == False) :
             time_stroller += 1
         
-        if time_stroller >= TIME_PER_APPEAR:
+        TIME_PER_APPEAR = FPS * 10
+
+        if not BAND_KEYBOUND and time_stroller >= TIME_PER_APPEAR:
             time_stroller = 0
             PLAY_STRL = True
 
-        if PLAY_STRL:
+        if not BAND_KEYBOUND and PLAY_STRL:
             pos_x_strl += SPEED_STRL
             if pos_x_strl >= WIDTH:
                 PLAY_STRL = False
                 pos_x_strl = -WIDTH_STRL
 
-            if overlab(IMG_PLY, ply_x, ply_y, (pos_x_strl, pos_y_strl+15, WIDTH_STRL, HEIGHT_STRL-10)):
+            if not BAND_KEYBOUND and overlab(IMG_PLY, ply_x, ply_y, (pos_x_strl, pos_y_strl+15, WIDTH_STRL, HEIGHT_STRL-10)):
                 ply_stete = 'crash'
 
         pos_x_coin = POS_COIN[select_coin][0]
         pos_y_coin = POS_COIN[select_coin][1]
-        if overlab(IMG_PLY, ply_x, ply_y, (pos_x_coin, pos_y_coin, WIDTH_COIN, HIEGHT_COIN)):
+        if not BAND_KEYBOUND and overlab(IMG_PLY, ply_x, ply_y, (pos_x_coin, pos_y_coin, WIDTH_COIN, HIEGHT_COIN)):
             COIN_SHOW = False
             score += 200
 
-        if COIN_SHOW == False:
+        if not BAND_KEYBOUND and COIN_SHOW == False:
             COIN_SHOW = True
             n_remain_coin = len(set_coin)
             
-            if n_remain_coin <= 0:                       # WHEN KEEP COIN ALL STATE
+            if not BAND_KEYBOUND and n_remain_coin <= 0: # WHEN KEEP COIN ALL STATE
                 set_coin = [i for i in range(5)]         # foctor of LEVEL GAME IS 'score'
                 n_remain_coin = 5
                 cur_x = (LEFT_BOUND + RIGHT_BOUND) // 2
@@ -661,7 +668,10 @@ def game_loop():
         if not BAND_KEYBOUND and (ply_stete == 'crash' or ply_stete == 'drowned'):
             BAND_KEYBOUND = True
             ply_die.append((ply_x, ply_y, ply_stete))
-        
+            cur_x = (LEFT_BOUND + RIGHT_BOUND)//2
+            y_id = 0
+            pass
+
         ply_x = cur_x
         ply_y = POS_Y[y_id]
 
