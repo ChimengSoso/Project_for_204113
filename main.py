@@ -577,13 +577,14 @@ def game_loop():
         fill_scr(COLOR_BLACK)
         
         push_img(IMG_BG, 25, 70)                  # DRAW BACKGROUND STAGE
+
+        player_die(ply_die)                       # SHOW HISTORY OF DEAD'PLAYER
         
         waterway_LTR(raft_waterway_LTR)           # DRAW RAFT LEFT TO RIGHT
         waterway_RTL(raft_waterway_RTL)           # DRAW RAFT RIGHT TO LEFT
 
-        player_die(ply_die)                       # SHOW HISTORY OF DEAD'PLAYER
-        player(ply_x, ply_y, ply_stete)           # SHOW PLAYER LIVE
-        
+        if (BAND_KEYBOUND == False) :player(ply_x, ply_y, ply_stete)           # SHOW PLAYER LIVE
+
         traffic_LTR(ghost_runway_LTR)             # DRAW TRAFFIC GHOST FROM LEFT TO RIGHT
         traffic_RTL(ghost_runway_RTL)             # DRAW TRAFFIC GHOST FROM RIGHT TO LEFT
 
