@@ -63,13 +63,14 @@ SOUND_WALK = pygame.mixer.Sound('sound/walk.wav')
 SOUND_COIN = pygame.mixer.Sound('sound/coin.wav')
 SOUND_CRASH = pygame.mixer.Sound('sound/crash.wav')
 SOUND_DROWN = pygame.mixer.Sound('sound/drown.wav')
+SOUND_LEVELUP = pygame.mixer.Sound('sound/level_up.wav')
 
 MUSIC_BG1 = pygame.mixer.music.load('sound/sound_bg1.wav')
 
 # MAIN VALUE OF GAME
-GAME_OVER = False
+GAME_OVER     = False
 BAND_KEYBOUND = False
-PLAY_STRL = False
+PLAY_STRL     = False
 
 best_score = -1
 best_level =  0
@@ -572,7 +573,7 @@ def game_loop():
     ################################################################
     ################################################################
 
-    level = 1
+    level = 0
 
     LEFT_BOUND = 30
     N_STEP_X = 15
@@ -633,9 +634,6 @@ def game_loop():
     set_coin = list()
     for i in range(1, 6):
         POS_COIN.append(((grave_list[i][0] + grave_list[i-1][0])//2, grave_list[i][1]))
-        set_coin.append(i-1)
-
-    select_coin = randint(0, 4)
 
     #SET PLAYER LIST DIE
     ply_die = list()
@@ -646,6 +644,8 @@ def game_loop():
 
     if back_home == True:
         return True
+
+    select_coin = 0
 
     while not GAME_OVER:
         # =============== EVENT PROCESSING ===================== #
@@ -817,27 +817,33 @@ def game_loop():
             if not BAND_KEYBOUND and overlab(IMG_PLY, ply_x, ply_y, (pos_x_strl, pos_y_strl+15, WIDTH_STRL, HEIGHT_STRL-10)):
                 ply_stete = 'crash'
 
+        n_remain_coin = len(set_coin)
+
+        if n_remain_coin <= 0:                       # WHEN KEEP COIN ALL STATE will LEVEL UP
+            set_coin = [i for i in range(5)]         # foctor of LEVEL GAME IS 'score'
+            n_remain_coin = 5
+            
+            play_sound(SOUND_LEVELUP)
+
+            cur_x = (LEFT_BOUND + RIGHT_BOUND) // 2
+            y_id = 0
+            
+            level += 1                               # NOT factor, it just show
+
+
+        if not BAND_KEYBOUND and COIN_SHOW == False and n_remain_coin >= 1:
+            COIN_SHOW = True
+            chioce_coin = randint(0, n_remain_coin-1)
+            # print(n_remain_coin, set_coin)
+            select_coin = set_coin[chioce_coin]
+            set_coin.pop(chioce_coin)
+
         pos_x_coin = POS_COIN[select_coin][0]
         pos_y_coin = POS_COIN[select_coin][1]
-        if not BAND_KEYBOUND and overlab(IMG_PLY, ply_x, ply_y, (pos_x_coin, pos_y_coin, WIDTH_COIN, HIEGHT_COIN)):
+        if COIN_SHOW and not BAND_KEYBOUND and overlab(IMG_PLY, ply_x, ply_y, (pos_x_coin, pos_y_coin, WIDTH_COIN, HIEGHT_COIN)):
+            play_sound(SOUND_COIN)
             COIN_SHOW = False
             score += 200
-
-        if not BAND_KEYBOUND and COIN_SHOW == False:
-            COIN_SHOW = True
-            n_remain_coin = len(set_coin)
-            
-            if not BAND_KEYBOUND and n_remain_coin <= 0: # WHEN KEEP COIN ALL STATE
-                set_coin = [i for i in range(5)]         # foctor of LEVEL GAME IS 'score'
-                n_remain_coin = 5
-                cur_x = (LEFT_BOUND + RIGHT_BOUND) // 2
-                y_id = 0
-                level += 1                               # NOT factor, it just show
-
-            chioce_coin = randint(0, n_remain_coin-1)
-            select_coin = set_coin[chioce_coin]
-
-            set_coin.pop(chioce_coin)
 
         FPS = 10*(3+(score//1000))
 
@@ -846,7 +852,10 @@ def game_loop():
             ply_die.append((ply_x, ply_y, ply_stete))
             cur_x = (LEFT_BOUND + RIGHT_BOUND)//2
             y_id = 0
-            pass
+            if ply_stete == 'crash':
+                play_sound(SOUND_CRASH)
+            elif ply_stete == 'drowned':
+                play_sound(SOUND_DROWN)
 
         ply_x = cur_x
         ply_y = POS_Y[y_id]
