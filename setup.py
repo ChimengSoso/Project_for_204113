@@ -1,7 +1,7 @@
 import cx_Freeze
 import os
 
-exes = [cx_Freeze.Executable("main.pyw")]
+exes = [cx_Freeze.Executable("main.py")]
 
 os.environ['TCL_LIBRARY'] = r'C:/Users/ChimengSoSo/AppData/Local/Programs/Python/Python36-32/tcl/tcl8.6'
 os.environ['TK_LIBRARY'] = r'C:/Users/ChimengSoSo/AppData/Local/Programs/Python/Python36-32/tcl/tk8.6'
@@ -9,7 +9,7 @@ os.environ['TK_LIBRARY'] = r'C:/Users/ChimengSoSo/AppData/Local/Programs/Python/
 cx_Freeze.setup(
     name = "COSSING",
     options = {"build_exe":{"packages":["pygame"], 
-               "include_files":["img/bg.png", "img/coin.png",
+               "include_files":[ "img/coin.png",
                "img/ghost1.png","img/ghost2.png","img/ghost3.png",
                "img/grave.png",
                "img/icon.png",
@@ -28,7 +28,7 @@ cx_Freeze.setup(
                "sound/level_up.wav",
                "sound/sound_bg1.wav",
                "sound/sound_bg2.wav",
-               "sound/walk.wav",]}},
+               "sound/walk.wav", "img//bg.png"]}},
 
     description = "Project Game for 204113",
     executables = exes
