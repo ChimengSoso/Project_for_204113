@@ -437,6 +437,10 @@ def how_to_play():
                 if ent.key == pygame.K_b:
                     return
 
+                if ent.key == pygame.K_q:
+                    pygame.quit()
+                    quit()
+
         fill_scr(COLOR_BLACK)
 
         SHIF = 50
@@ -468,6 +472,9 @@ def ready_start():
         events = pygame.event.get()
         for ent in events:
             game_exit(ent)
+            if ent.type == pygame.KEYDOWN:
+                if ent.key == pygame.K_q:
+                    return True       # Select Exit Game == True
 
         fill_scr(COLOR_BLACK)
         
@@ -490,6 +497,7 @@ def ready_start():
 
         update_screen()
         clock_time.tick(FPS)
+    return False  # Select to backing home is False
 
 def pause_game():
     while True:
@@ -527,6 +535,10 @@ def game_loop():
                 if ent.key == pygame.K_h:
                     how_to_play()
 
+                if ent.key == pygame.K_q:
+                    pygame.quit()
+                    quit()
+
 
         fill_scr(COLOR_BLACK)
         width_img = IMG_MENU.get_width()
@@ -534,6 +546,7 @@ def game_loop():
 
         message_to_screen("Pass C to Play the Game!", COLOR_WHITE, 50)
         message_to_screen("Pass H to See How to Play", COLOR_WHITE, 85)
+        message_to_screen("Pass Q to Exit", COLOR_WHITE, 180)
 
         update_screen()
         clock_time.tick(FPS)
@@ -613,7 +626,9 @@ def game_loop():
     #SET SCORE
     score = 0
 
-    ready_start()
+    back_home = ready_start()
+    if back_home == True:
+        return True
 
     while not GAME_OVER:
         # =============== EVENT PROCESSING ===================== #
