@@ -455,14 +455,37 @@ def how_to_play():
 
         update_screen()
         clock_time.tick(FPS)
-    """how to play : KEY
-pass a or arrow left  : move lefr
-pass d or arrow right : move right
-pass s or arrow down  : move down
-pass w or arrow up    : move up
 
-space_bar : live again
-c : clear body"""
+def ready_start():
+    count_down = 3
+    time_count = 0
+    limit_time = FPS
+    while count_down > 0:
+        events = pygame.event.get()
+        for ent in events:
+            game_exit(ent)
+
+        fill_scr(COLOR_BLACK)
+        
+        push_img(IMG_BG, 25, 70)                  # DRAW BACKGROUND STAGE
+        message_to_screen(str(count_down), COLOR_BLACK, 0, 'large')
+
+        draw_bound(COLOR_GREY, 4)                 # DRAW BOUND OF STAGE
+        
+        push_img(IMG_NAME_GAME, 175, 10)          # PUSH name of GAME to Screen
+
+        show_score(0)                         # SHOW score ps. it is foctor of level game
+        show_level(0)                         # SHOW level status
+
+        message_to_screen("DEMO", COLOR_GREEN, 285) # tag DEMO for this game
+        
+        time_count += 1
+        if time_count >= limit_time:
+            time_count = 0
+            count_down -= 1
+
+        update_screen()
+        clock_time.tick(FPS)
 
 def game_loop():
     global GAME_OVER
@@ -569,6 +592,8 @@ def game_loop():
 
     #SET SCORE
     score = 0
+
+    ready_start()
 
     while not GAME_OVER:
         # =============== EVENT PROCESSING ===================== #
