@@ -58,6 +58,9 @@ small_font = pygame.font.SysFont("consolas", 20)
 med_font = pygame.font.SysFont("consolas", 50)
 large_font = pygame.font.SysFont("consolas", 80)
 
+# SET MUSIC
+SOUND_WALK = pygame.mixer.Sound('sound/walk.wav')
+
 # MAIN VALUE OF GAME
 GAME_OVER = False
 BAND_KEYBOUND = False
@@ -522,6 +525,8 @@ def play_sound(sound_input_for_play):
 def play_music(muisc_input_for_play):
     # Play background Sound
     pygame.mixer.music.play(muisc_input_for_play)
+
+play_sound(SOUND_WALK)
 
 def game_loop():
     global GAME_OVER
