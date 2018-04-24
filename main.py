@@ -691,6 +691,9 @@ def game_loop():
 
                 select_coin = randint(0, 4)
 
+            if BAND_KEYBOUND and ent.type == pygame.KEYDOWN and ent.key == pygame.K_q:
+                return True
+
 
         # ===================== LOGIC GAME ======================= #
         if not BAND_KEYBOUND and len(ghost_runway_RTL) < randint(1, 4):
