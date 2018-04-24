@@ -468,10 +468,10 @@ def ready_start():
         fill_scr(COLOR_BLACK)
         
         push_img(IMG_BG, 25, 70)                  # DRAW BACKGROUND STAGE
-        message_to_screen(str(count_down), COLOR_BLACK, 0, 'large')
+        message_to_screen(str(count_down), COLOR_WHITE, 0, 'large')
 
         draw_bound(COLOR_GREY, 4)                 # DRAW BOUND OF STAGE
-        
+
         push_img(IMG_NAME_GAME, 175, 10)          # PUSH name of GAME to Screen
 
         show_score(0)                         # SHOW score ps. it is foctor of level game
@@ -483,6 +483,22 @@ def ready_start():
         if time_count >= limit_time:
             time_count = 0
             count_down -= 1
+
+        update_screen()
+        clock_time.tick(FPS)
+
+def pause_game():
+    while True:
+        events = pygame.event.get()
+        for ent in events:
+            game_exit(ent)
+
+            if ent.type == pygame.KEYDOWN:
+                if ent.key == pygame.K_SPACE:
+                    return
+
+        message_to_screen("PAUSE", COLOR_WHITE, -20, 'medium')
+        message_to_screen('Pass SPACE to continue', COLOR_WHITE, 20)
 
         update_screen()
         clock_time.tick(FPS)
@@ -618,7 +634,7 @@ def game_loop():
                     y_id -= 1
 
                 if  key == pygame.K_p:
-                    pass
+                    pause_game()
 
                 if ent.key == pygame.K_c:
                     ply_die.clear()
@@ -834,7 +850,10 @@ def game_loop():
         clock_time.tick(FPS)
 
 # START game loop
-game_loop()
+
+REGAME = True
+while REGAME:
+    REGAME = game_loop()
 
 '''
 how to play : KEY
