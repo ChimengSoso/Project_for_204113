@@ -71,6 +71,8 @@ MUSIC_BG1 = pygame.mixer.music.load('sound/sound_bg1.wav')
 GAME_OVER     = False
 BAND_KEYBOUND = False
 PLAY_STRL     = False
+SOUND_OPEN = True
+
 
 best_score = -1
 best_level =  0
@@ -294,6 +296,12 @@ def show_level(level):
     text_width = text.get_width()
     push_img(text, WIDTH-25-text_width, 52)
 
+def show_state_sound():
+    global SOUND_OPEN
+    text = small_font.render("SOUND:" + ("ON" if SOUND_OPEN else "OFF"), True, COLOR_WHITE)
+    text_h = text.get_height()
+    push_img(text, 25, HIGHT-text_h-5)
+
 def text_objects(text, color, size) :
     if size == "small":
         textSuf = small_font.render(text, True, color)
@@ -474,6 +482,7 @@ def how_to_play():
         clock_time.tick(FPS)
 
 def ready_start():
+    global SOUND_OPEN
     count_down = 3
     time_count = 0
     limit_time = FPS
@@ -484,6 +493,9 @@ def ready_start():
             if ent.type == pygame.KEYDOWN:
                 if ent.key == pygame.K_q:
                     return True       # Select Exit Game == True
+
+                if ent.key == pygame.K_x:
+                    SOUND_OPEN = (SOUND_OPEN != True)
 
         fill_scr(COLOR_BLACK)
         
@@ -499,6 +511,8 @@ def ready_start():
 
         message_to_screen("DEMO", COLOR_GREEN, 285) # tag DEMO for this game
         
+        show_state_sound()
+
         time_count += 1
         if time_count >= limit_time:
             time_count = 0
@@ -525,8 +539,10 @@ def pause_game():
         clock_time.tick(FPS)
 
 def play_sound(sound_input_for_play):
+    global SOUND_OPEN
     # Play SOUND function
-    pygame.mixer.Sound.play(sound_input_for_play)
+    if SOUND_OPEN:
+        pygame.mixer.Sound.play(sound_input_for_play)
 
 def play_music(state = 'play'):
     # Play background Sound
@@ -538,7 +554,7 @@ def game_loop():
     global BAND_KEYBOUND
     global FPS
     global PLAY_STRL
-
+    global SOUND_OPEN
 
     GAME_INTRO = True
     while (GAME_INTRO) :
@@ -557,6 +573,8 @@ def game_loop():
                     pygame.quit()
                     quit()
 
+                if ent.key == pygame.K_x:
+                    SOUND_OPEN = (SOUND_OPEN != True)
 
         fill_scr(COLOR_BLACK)
         width_img = IMG_MENU.get_width()
@@ -679,6 +697,9 @@ def game_loop():
                 if ent.key == pygame.K_c:
                     ply_die.clear()
 
+                if ent.key == pygame.K_x:
+                    SOUND_OPEN = (SOUND_OPEN != True)
+
                 if ent.key == pygame.K_q:
                     return True
 
@@ -697,6 +718,7 @@ def game_loop():
 
             if BAND_KEYBOUND and ent.type == pygame.KEYDOWN and ent.key == pygame.K_q:
                 return True
+
 
 
         # ===================== LOGIC GAME ======================= #
@@ -897,7 +919,7 @@ def game_loop():
 
         if BAND_KEYBOUND :                        # PROCRESS START WHEN PLAYER DIE
             show_best_score(score, level)
-
+        show_state_sound()                        # SHOW SOUND ON / OFF
         # draw_gird()
         """ ========================================== """
 
