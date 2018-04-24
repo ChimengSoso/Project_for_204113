@@ -449,7 +449,11 @@ def how_to_play():
         message_to_screen('pass w or arrow up    : move up   ', COLOR_WHITE,-60+ SHIF)
 
         message_to_screen('pass c : clear body', COLOR_WHITE, 0+ SHIF)
-        message_to_screen('pass b to back', COLOR_WHITE,30+ SHIF)
+        message_to_screen('pass p : pause game', COLOR_WHITE, 20+ SHIF)
+        message_to_screen('pass q : quit game ', COLOR_WHITE, 40+ SHIF)
+
+
+        message_to_screen('pass b to back', COLOR_WHITE,100+ SHIF)
 
         message_to_screen('Don\'t be Crashed, Don\'t be drowned!!', COLOR_RED, 200)
 
