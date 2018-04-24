@@ -58,8 +58,13 @@ small_font = pygame.font.SysFont("consolas", 20)
 med_font = pygame.font.SysFont("consolas", 50)
 large_font = pygame.font.SysFont("consolas", 80)
 
-# SET MUSIC
+# SET MUSIC and SOUND
 SOUND_WALK = pygame.mixer.Sound('sound/walk.wav')
+SOUND_COIN = pygame.mixer.Sound('sound/coin.wav')
+SOUND_CRASH = pygame.mixer.Sound('sound/crash.wav')
+SOUND_DROWN = pygame.mixer.Sound('sound/drown.wav')
+
+MUSIC_BG1 = pygame.mixer.music.load('sound/sound_bg1.wav')
 
 # MAIN VALUE OF GAME
 GAME_OVER = False
@@ -522,11 +527,10 @@ def play_sound(sound_input_for_play):
     # Play SOUND function
     pygame.mixer.Sound.play(sound_input_for_play)
 
-def play_music(muisc_input_for_play):
+def play_music(state = 'play'):
     # Play background Sound
-    pygame.mixer.music.play(muisc_input_for_play)
-
-play_sound(SOUND_WALK)
+    if state == 'play':
+        pygame.mixer.music.play(2)
 
 def game_loop():
     global GAME_OVER
@@ -638,8 +642,8 @@ def game_loop():
 
     #SET SCORE
     score = 0
-
     back_home = ready_start()
+
     if back_home == True:
         return True
 
