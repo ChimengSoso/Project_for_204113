@@ -643,6 +643,9 @@ def game_loop():
                 if ent.key == pygame.K_c:
                     ply_die.clear()
 
+                if ent.key == pygame.K_q:
+                    return True
+
             if BAND_KEYBOUND and ent.type == pygame.KEYDOWN and ent.key == pygame.K_SPACE:
                 BAND_KEYBOUND = False
                 cur_x = (LEFT_BOUND + RIGHT_BOUND) // 2
