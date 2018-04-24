@@ -515,6 +515,14 @@ def pause_game():
         update_screen()
         clock_time.tick(FPS)
 
+def play_sound(sound_input_for_play):
+    # Play SOUND function
+    pygame.mixer.Sound.play(sound_input_for_play)
+
+def play_music(muisc_input_for_play):
+    # Play background Sound
+    pygame.mixer.music.play(muisc_input_for_play)
+
 def game_loop():
     global GAME_OVER
     global BAND_KEYBOUND
