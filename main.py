@@ -658,16 +658,20 @@ def game_loop():
                 if key == pygame.K_LEFT or key == pygame.K_a:
                     # x_id -= 1
                     cur_x -= STEP_X
+                    play_sound(SOUND_WALK)
 
                 if key == pygame.K_RIGHT or key == pygame.K_d:
                     # x_id += 1
                     cur_x += STEP_X
+                    play_sound(SOUND_WALK)
 
                 if key == pygame.K_UP or key == pygame.K_w:
                     y_id += 1
+                    play_sound(SOUND_WALK)
 
                 if key == pygame.K_DOWN or key == pygame.K_s:
                     y_id -= 1
+                    play_sound(SOUND_WALK)
 
                 if  key == pygame.K_p:
                     pause_game()
