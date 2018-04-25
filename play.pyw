@@ -751,22 +751,32 @@ def game_loop():
                 if ent.key == pygame.K_h:
                     how_to_play()
 
-            if BAND_KEYBOUND and ent.type == pygame.KEYDOWN and ent.key == pygame.K_SPACE:
-                BAND_KEYBOUND = False
-                cur_x = (LEFT_BOUND + RIGHT_BOUND) // 2
-                y_id = 0
-                state = 'live'
-                score = 0
-                level = 1
-                set_coin.clear()
-                for i in range(5):
-                    set_coin.append(i)
+            if BAND_KEYBOUND and ent.type == pygame.KEYDOWN :
+                if ent.key == pygame.K_SPACE:
+                    BAND_KEYBOUND = False
+                    cur_x = (LEFT_BOUND + RIGHT_BOUND) // 2
+                    y_id = 0
+                    state = 'live'
+                    score = 0
+                    level = 1
+                    set_coin.clear()
+                    for i in range(5):
+                        set_coin.append(i)
 
-                select_coin = randint(0, 4)
+                    select_coin = randint(0, 4)
 
-            if BAND_KEYBOUND and ent.type == pygame.KEYDOWN and ent.key == pygame.K_q:
-                return True
+                if ent.key == pygame.K_q:
+                    return True
 
+                if ent.key == pygame.K_h:
+                    how_to_play()
+
+                if ent.key == pygame.K_m:
+                    MUSIC_OPEN = (MUSIC_OPEN != True)
+                    play_music()
+
+                if ent.key == pygame.K_x:
+                    SOUND_OPEN = (SOUND_OPEN != True)
 
 
         # ===================== LOGIC GAME ======================= #
@@ -885,7 +895,9 @@ def game_loop():
                 PLAY_STRL = False
                 pos_x_strl = -WIDTH_STRL
             else:
-                play_sound(SOUND_CART)
+                if (pos_x_strl % 100 == 67):
+                    play_sound(SOUND_CART)
+                print(pos_x_strl)
 
             if not BAND_KEYBOUND and overlab(IMG_PLY, ply_x, ply_y, (pos_x_strl, pos_y_strl+15, WIDTH_STRL, HEIGHT_STRL-10)):
                 ply_stete = 'crash'
