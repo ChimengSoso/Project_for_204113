@@ -1,34 +1,19 @@
 import cx_Freeze
 import os
 
-exes = [cx_Freeze.Executable("main.py")]
+exes = [cx_Freeze.Executable("play.pyw")]
 
 os.environ['TCL_LIBRARY'] = r'C:/Users/ChimengSoSo/AppData/Local/Programs/Python/Python36-32/tcl/tcl8.6'
 os.environ['TK_LIBRARY'] = r'C:/Users/ChimengSoSo/AppData/Local/Programs/Python/Python36-32/tcl/tk8.6'
 
 cx_Freeze.setup(
-    name = "COSSING",
+    name = "CROSSING",
     options = {"build_exe":{"packages":["pygame"], 
-               "include_files":[ "img/coin.png",
-               "img/ghost1.png","img/ghost2.png","img/ghost3.png",
-               "img/grave.png",
-               "img/icon.png",
-               "img/menu.png",
-               "img/namegame.png",
-               "img/player_crash.png",
-               "img/player_drowned.png",
-               "img/player_live.png",
-               "img/raft1.png",
-               "img/raft2.png",
-               "img/small_bound.png",
-               "img/stroller.png",
-               "sound/coin.wav",
-               "sound/crash.wav",
-               "sound/drown.wav",
-               "sound/level_up.wav",
-               "sound/sound_bg1.wav",
-               "sound/sound_bg2.wav",
-               "sound/walk.wav", "img//bg.png"]}},
+               "include_files":[ "coin.png", "ghost1.png", "ghost2.png", "ghost3.png",
+               "grave.png", "icon.png", "menu.png", "namegame.png", "player_crash.png",
+               "player_drowned.png", "player_live.png", "raft1.png", "raft2.png",
+               "small_bound.png", "stroller.png", "coin.wav", "crash.wav", "drown.wav",
+               "level_up.wav", "sound_bg1.wav", "sound_bg2.wav", "walk.wav", "bg.png"]}},
 
     description = "Project Game for 204113",
     executables = exes
