@@ -24,23 +24,23 @@ COLOR_BROWN = (147, 83, 0)
 COLOR_GREEN_STRONG = (0, 137, 26)
 
 # SETTING IMAGE
-IMG_BG = pygame.image.load(os.path.join("img","bg.png"))
-IMG_NAME_GAME = pygame.image.load('img/namegame.png')
-IMG_ICON = pygame.image.load('img/icon.png')
+IMG_BG = pygame.image.load('bg.png')
+IMG_NAME_GAME = pygame.image.load('namegame.png')
+IMG_ICON = pygame.image.load('icon.png')
 
-IMG_PLY = pygame.image.load('img/player_live.png')
-IMG_CRASH = pygame.image.load('img/player_crash.png')
-IMG_DROWNED = pygame.image.load('img/player_drowned.png')
+IMG_PLY = pygame.image.load('player_live.png')
+IMG_CRASH = pygame.image.load('player_crash.png')
+IMG_DROWNED = pygame.image.load('player_drowned.png')
 
-IMG_GST = [pygame.image.load('img/ghost' + str(i+1) + '.png') for i in range(3)]
-IMG_RAFT = [pygame.image.load('img/raft'+str(i+1)+'.png') for i in range(2)]
-IMG_STRL = pygame.image.load('img/stroller.png')
+IMG_GST = [pygame.image.load('ghost' + str(i+1) + '.png') for i in range(3)]
+IMG_RAFT = [pygame.image.load('raft'+str(i+1)+'.png') for i in range(2)]
+IMG_STRL = pygame.image.load('stroller.png')
 
-IMG_GRAVE = pygame.image.load('img/grave.png')
-IMG_COIN = pygame.image.load('img/coin.png')
+IMG_GRAVE = pygame.image.load('grave.png')
+IMG_COIN = pygame.image.load('coin.png')
 
-IMG_SB = pygame.image.load('img/small_bound.png')
-IMG_MENU = pygame.image.load('img/menu.png')
+IMG_SB = pygame.image.load('small_bound.png')
+IMG_MENU = pygame.image.load('menu.png')
 
 # SETTING GAME DISPLAY
 SIZE_SCREEN = (WIDTH, HIGHT)
@@ -60,13 +60,13 @@ med_font = pygame.font.SysFont("consolas", 50)
 large_font = pygame.font.SysFont("consolas", 80)
 
 # SET MUSIC and SOUND
-SOUND_WALK = pygame.mixer.Sound('sound/walk.wav')
-SOUND_COIN = pygame.mixer.Sound('sound/coin.wav')
-SOUND_CRASH = pygame.mixer.Sound('sound/crash.wav')
-SOUND_DROWN = pygame.mixer.Sound('sound/drown.wav')
-SOUND_LEVELUP = pygame.mixer.Sound('sound/level_up.wav')
+SOUND_WALK = pygame.mixer.Sound('walk.wav')
+SOUND_COIN = pygame.mixer.Sound('coin.wav')
+SOUND_CRASH = pygame.mixer.Sound('crash.wav')
+SOUND_DROWN = pygame.mixer.Sound('drown.wav')
+SOUND_LEVELUP = pygame.mixer.Sound('level_up.wav')
 
-MUSIC_BG1 = pygame.mixer.music.load('sound/sound_bg1.wav')
+MUSIC_BG1 = pygame.mixer.music.load('sound_bg1.wav')
 
 # MAIN VALUE OF GAME
 GAME_OVER     = False
