@@ -65,15 +65,17 @@ SOUND_COIN = pygame.mixer.Sound('coin.wav')
 SOUND_CRASH = pygame.mixer.Sound('crash.wav')
 SOUND_DROWN = pygame.mixer.Sound('drown.wav')
 SOUND_LEVELUP = pygame.mixer.Sound('level_up.wav')
+SOUND_CART = pygame.mixer.Sound('cart.wav')
+SOUND_GST = [pygame.mixer.Sound('g'+str(i+1)) for i in range(3)]
 
-MUSIC_BG1 = pygame.mixer.music.load('sound_bg1.wav')
+pygame.mixer.music.load('sound_bg'+str(randint(1,2))+'.wav')
 
 # MAIN VALUE OF GAME
 GAME_OVER     = False
 BAND_KEYBOUND = False
 PLAY_STRL     = False
 SOUND_OPEN = True
-
+MUSIC_OPEN = True
 
 best_score = -1
 best_level =  0
@@ -303,6 +305,13 @@ def show_state_sound():
     text_h = text.get_height()
     push_img(text, 25, HIGHT-text_h-5)
 
+def show_state_music():
+    global MUSIC_OPEN
+    text = small_font.render("MUSIC: " + ("ON" if MUSIC_OPEN else "OFF"), True, COLOR_WHITE)
+    text_h = text.get_height()
+    text_w = text.get_width()
+    push_img(text, WIDTH-text_w-25, HIGHT - text_h - 5)
+
 def text_objects(text, color, size) :
     if size == "small":
         textSuf = small_font.render(text, True, color)
@@ -453,37 +462,42 @@ def how_to_play():
 
             if ent.type == pygame.KEYDOWN:
                 if ent.key == pygame.K_b:
+                    play_sound(SOUND_WALK)
                     return
 
                 if ent.key == pygame.K_q:
+                    play_sound(SOUND_WALK)
                     pygame.quit()
                     quit()
 
         fill_scr(COLOR_BLACK)
 
-        SHIF = 50
+        SHIF = 0
 
-        message_to_screen("HOW TO PLAY", COLOR_WHITE, -200 + SHIF, 'medium')
+        message_to_screen("HOW TO PLAY", COLOR_GREY, -200 + SHIF, 'medium')
 
-        message_to_screen('pass a or arrow left  : move left ', COLOR_WHITE,-120+ SHIF)
-        message_to_screen('pass d or arrow right : move right', COLOR_WHITE,-100+ SHIF)
-        message_to_screen('pass s or arrow down  : move down ', COLOR_WHITE,-80+ SHIF)
-        message_to_screen('pass w or arrow up    : move up   ', COLOR_WHITE,-60+ SHIF)
+        message_to_screen('pass A or arrow left  : move left ', COLOR_WHITE,-120+ SHIF)
+        message_to_screen('pass D or arrow right : move right', COLOR_WHITE,-100+ SHIF)
+        message_to_screen('pass S or arrow down  : move down ', COLOR_WHITE,-80+ SHIF)
+        message_to_screen('pass W or arrow up    : move up   ', COLOR_WHITE,-60+ SHIF)
 
-        message_to_screen('pass c : clear body', COLOR_WHITE, 0+ SHIF)
-        message_to_screen('pass p : pause game', COLOR_WHITE, 20+ SHIF)
-        message_to_screen('pass q : quit game ', COLOR_WHITE, 40+ SHIF)
+        message_to_screen('pass C : clear body     ', COLOR_WHITE, 0+ SHIF)
+        message_to_screen('pass X : ON or OFF sound', COLOR_WHITE, 20+ SHIF)
+        message_to_screen('pass M : ON or OFF Music', COLOR_WHITE, 40+ SHIF)
+        message_to_screen('pass P : pause game     ', COLOR_WHITE, 60+ SHIF)
+        message_to_screen('pass Q : quit game      ', COLOR_WHITE, 80+ SHIF)
 
 
-        message_to_screen('pass b to back', COLOR_WHITE,100+ SHIF)
+        message_to_screen('pass B to back', COLOR_GREEN,140+ SHIF)
 
-        message_to_screen('Don\'t be Crashed, Don\'t be drowned!!', COLOR_RED, 200)
+        message_to_screen('Don\'t get crashed, Don\'t drown!!', COLOR_RED, 200+SHIF)
 
         update_screen()
         clock_time.tick(FPS)
 
 def ready_start():
     global SOUND_OPEN
+    global MUSIC_OPEN
     count_down = 3
     time_count = 0
     limit_time = FPS
@@ -498,6 +512,14 @@ def ready_start():
                 if ent.key == pygame.K_x:
                     SOUND_OPEN = (SOUND_OPEN != True)
 
+                if ent.key == pygame.K_m:
+                    MUSIC_OPEN = (MUSIC_OPEN != True)
+                    play_music()
+
+                if ent.key == pygame.K_h:
+                    play_sound(SOUND_WALK)
+                    how_to_play()
+
         fill_scr(COLOR_BLACK)
         
         push_img(IMG_BG, 25, 70)                  # DRAW BACKGROUND STAGE
@@ -511,8 +533,8 @@ def ready_start():
         show_level(0)                         # SHOW level status
 
         message_to_screen("DEMO", COLOR_GREEN, 285) # tag DEMO for this game
-        
         show_state_sound()
+        show_state_music()
 
         time_count += 1
         if time_count >= limit_time:
@@ -531,7 +553,9 @@ def pause_game():
 
             if ent.type == pygame.KEYDOWN:
                 if ent.key == pygame.K_SPACE:
+                    play_sound(SOUND_WALK)
                     return
+
 
         message_to_screen("PAUSE", COLOR_WHITE, -20, 'medium')
         message_to_screen('Pass SPACE to continue', COLOR_WHITE, 20)
@@ -545,10 +569,13 @@ def play_sound(sound_input_for_play):
     if SOUND_OPEN:
         pygame.mixer.Sound.play(sound_input_for_play)
 
-def play_music(state = 'play'):
+def play_music():
     # Play background Sound
-    if state == 'play':
-        pygame.mixer.music.play(2)
+    global MUSIC_OPEN
+    if MUSIC_OPEN:
+        pygame.mixer.music.play(-1)
+    else:
+        pygame.mixer.music.stop()
 
 def game_loop():
     global GAME_OVER
@@ -556,6 +583,7 @@ def game_loop():
     global FPS
     global PLAY_STRL
     global SOUND_OPEN
+    global MUSIC_OPEN
 
     GAME_INTRO = True
     while (GAME_INTRO) :
@@ -565,17 +593,24 @@ def game_loop():
 
             if ent.type == pygame.KEYDOWN:
                 if ent.key == pygame.K_c:
+                    play_sound(SOUND_WALK)
                     GAME_INTRO = False
 
                 if ent.key == pygame.K_h:
+                    play_sound(SOUND_WALK)
                     how_to_play()
 
                 if ent.key == pygame.K_q:
+                    play_sound(SOUND_WALK)
                     pygame.quit()
                     quit()
 
                 if ent.key == pygame.K_x:
                     SOUND_OPEN = (SOUND_OPEN != True)
+
+                if ent.key == pygame.K_m:
+                    MUSIC_OPEN = (MUSIC_OPEN != True)
+                    play_music()
 
         fill_scr(COLOR_BLACK)
         width_img = IMG_MENU.get_width()
@@ -666,6 +701,8 @@ def game_loop():
 
     select_coin = 0
 
+    play_music()
+
     while not GAME_OVER:
         # =============== EVENT PROCESSING ===================== #
         events = pygame.event.get()
@@ -701,8 +738,15 @@ def game_loop():
                 if ent.key == pygame.K_x:
                     SOUND_OPEN = (SOUND_OPEN != True)
 
+                if ent.key == pygame.K_m:
+                    MUSIC_OPEN = (MUSIC_OPEN != True)
+                    play_music()
+
                 if ent.key == pygame.K_q:
                     return True
+
+                if ent.key == pygame.K_h:
+                    how_to_play()
 
             if BAND_KEYBOUND and ent.type == pygame.KEYDOWN and ent.key == pygame.K_SPACE:
                 BAND_KEYBOUND = False
@@ -833,9 +877,12 @@ def game_loop():
 
         if not BAND_KEYBOUND and PLAY_STRL:
             pos_x_strl += SPEED_STRL
+
             if pos_x_strl >= WIDTH:
                 PLAY_STRL = False
                 pos_x_strl = -WIDTH_STRL
+            else:
+                play_sound(SOUND_CART)
 
             if not BAND_KEYBOUND and overlab(IMG_PLY, ply_x, ply_y, (pos_x_strl, pos_y_strl+15, WIDTH_STRL, HEIGHT_STRL-10)):
                 ply_stete = 'crash'
@@ -921,6 +968,8 @@ def game_loop():
         if BAND_KEYBOUND :                        # PROCRESS START WHEN PLAYER DIE
             show_best_score(score, level)
         show_state_sound()                        # SHOW SOUND ON / OFF
+        show_state_music()                        # SHOW MUSIC ON / OFF
+
         # draw_gird()
         """ ========================================== """
 

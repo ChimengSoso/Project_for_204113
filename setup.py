@@ -13,7 +13,7 @@ cx_Freeze.setup(
                "grave.png", "icon.png", "menu.png", "namegame.png", "player_crash.png",
                "player_drowned.png", "player_live.png", "raft1.png", "raft2.png",
                "small_bound.png", "stroller.png", "coin.wav", "crash.wav", "drown.wav",
-               "level_up.wav", "sound_bg1.wav", "sound_bg2.wav", "walk.wav", "bg.png"]}},
+               "level_up.wav", "sound_bg1.wav", "sound_bg2.wav", "walk.wav", "bg.png", "cart.wav", "g1.wav", "g2.wav", "g3.wav"]}},
 
     description = "Project Game for 204113",
     executables = exes
