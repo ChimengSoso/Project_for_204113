@@ -66,7 +66,9 @@ SOUND_CRASH = pygame.mixer.Sound('crash.wav')
 SOUND_DROWN = pygame.mixer.Sound('drown.wav')
 SOUND_LEVELUP = pygame.mixer.Sound('level_up.wav')
 SOUND_CART = pygame.mixer.Sound('cart.wav')
-SOUND_GST = [pygame.mixer.Sound('g'+str(i+1)) for i in range(3)]
+SOUND_GST = [pygame.mixer.Sound('g'+str(i+1)+'.wav') for i in range(3)]
+SOUND_POK = pygame.mixer.Sound('count_down_pok.wav')
+SOUND_PASS = pygame.mixer.Sound('button_pass.wav')
 
 pygame.mixer.music.load('sound_bg'+str(randint(1,2))+'.wav')
 
@@ -462,11 +464,11 @@ def how_to_play():
 
             if ent.type == pygame.KEYDOWN:
                 if ent.key == pygame.K_b:
-                    play_sound(SOUND_WALK)
+                    play_sound(SOUND_PASS)
                     return
 
                 if ent.key == pygame.K_q:
-                    play_sound(SOUND_WALK)
+                    play_sound(SOUND_PASS)
                     pygame.quit()
                     quit()
 
@@ -517,7 +519,7 @@ def ready_start():
                     play_music()
 
                 if ent.key == pygame.K_h:
-                    play_sound(SOUND_WALK)
+                    play_sound(SOUND_PASS)
                     how_to_play()
 
         fill_scr(COLOR_BLACK)
@@ -539,6 +541,7 @@ def ready_start():
         time_count += 1
         if time_count >= limit_time:
             time_count = 0
+            play_sound(SOUND_POK)
             count_down -= 1
 
         update_screen()
@@ -553,7 +556,7 @@ def pause_game():
 
             if ent.type == pygame.KEYDOWN:
                 if ent.key == pygame.K_SPACE:
-                    play_sound(SOUND_WALK)
+                    play_sound(SOUND_PASS)
                     return
 
 
@@ -593,15 +596,15 @@ def game_loop():
 
             if ent.type == pygame.KEYDOWN:
                 if ent.key == pygame.K_c:
-                    play_sound(SOUND_WALK)
+                    play_sound(SOUND_PASS)
                     GAME_INTRO = False
 
                 if ent.key == pygame.K_h:
-                    play_sound(SOUND_WALK)
+                    play_sound(SOUND_PASS)
                     how_to_play()
 
                 if ent.key == pygame.K_q:
-                    play_sound(SOUND_WALK)
+                    play_sound(SOUND_PASS)
                     pygame.quit()
                     quit()
 
@@ -922,7 +925,10 @@ def game_loop():
             ply_die.append((ply_x, ply_y, ply_stete))
             cur_x = (LEFT_BOUND + RIGHT_BOUND)//2
             y_id = 0
+            
             if ply_stete == 'crash':
+                play_sound(SOUND_GST[randint(0,2)])
+                time.sleep(0.5)
                 play_sound(SOUND_CRASH)
             elif ply_stete == 'drowned':
                 play_sound(SOUND_DROWN)
