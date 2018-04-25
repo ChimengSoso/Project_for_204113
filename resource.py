@@ -45,7 +45,7 @@ IMG_MENU = pygame.image.load('img/menu.png')
 # SETTING GAME DISPLAY
 SIZE_SCREEN = (WIDTH, HIGHT)
 gameDisplay = pygame.display.set_mode(SIZE_SCREEN)
-pygame.display.set_caption("CROSSINHG")
+pygame.display.set_caption("CROSSING")
 pygame.display.set_icon(IMG_ICON)
 
 # SET CLOCK
