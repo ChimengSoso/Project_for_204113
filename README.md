@@ -16,7 +16,7 @@ python play.pyw
 ## Authors
 * **Chetsada Tapanya** - *Present / Graphic design / Powerpoint design*
 * **Worakun Ata** - *Project manager / Developer / Design Overview / Remodel design / Present*
-* **Patteera Thisri** - *Coordinator / Game design / Game planer / Present*
+* **Patteera Thisri** - *Coordinator / Game design / Game planer / Present / Data compiler*
 * **Siriyakorn Koklang** - *Graphic design / Poster design / Present*
 * **Suwannee thongtha** - *Sound / Character design*
 * **Iya Thongmak** - *Sound / Game planer*
