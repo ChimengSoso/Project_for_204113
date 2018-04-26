@@ -20,3 +20,8 @@ python play.pyw
 * **Siriyakorn Koklang** - *Graphic design / Poster design / Present*
 * **Suwannee thongtha** - *Sound / Character design*
 * **Iya Thongmak** - *Sound / Game planer*
+
+# POSTER
+![alt text](https://github.com/ChimengSoso/Project_for_204113/blob/master/POSTER.png)
+
+### GUIDE PRESENT PROJECT [for more info](https://github.com/ChimengSoso/Project_for_204113/blob/master/PRESENT.pdf)
